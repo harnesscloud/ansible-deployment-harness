@@ -19,8 +19,6 @@ openstack_network_external_allocation_pool_start=$(g5k-subnets -i | head -2 | ta
 openstack_network_external_allocation_pool_end=$(g5k-subnets -i | tail -1)
 openstack_network_external_dns_servers=$(g5k-subnets -d | perl -lane 'print $F[-1]')
 
-# FIXME: netmask?
-
 cat <<EOF
 {
     "controller" : {
