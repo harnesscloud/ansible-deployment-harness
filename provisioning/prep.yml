@@ -25,7 +25,7 @@
 
     - name: update external network configuration from template
       template:
-        src: etc/network/interfaces.d/external-network
+        src: templates/etc/network/interfaces.d/external-network
         dest: /etc/network/interfaces.d/external-network
         owner: root
         group: root
