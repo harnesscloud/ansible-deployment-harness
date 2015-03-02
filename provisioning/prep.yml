@@ -18,6 +18,8 @@
       with_items:
         - python-mysqldb
         - python-keystoneclient
+        - mysql-server
+        - mysql-client
 
 - hosts: all:!network
   sudo: True

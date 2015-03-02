@@ -2,7 +2,6 @@
 - hosts: controller
   sudo: True
   roles:
-    - mariadb
     - rabbitmq-server
     - keystone
     - glance
