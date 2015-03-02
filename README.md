@@ -90,6 +90,12 @@ installed to your account. To update your deployment it may be necessary to
 "git pull" and then re-run the above-listed ansible-playbook command to update
 the roles.
 
+The file inventories/g5k.sh is a shell script that will read the OAR_NODE_FILE
+created by oar to describe your reservation and generate an inventory usable by
+ansible. It needs to be executable, but git does not manage file permissions,
+so be sure to set the executable bit on this file:
+
+    chmod +x inventories/g5k.sh
 
 Deployment
 ----------
