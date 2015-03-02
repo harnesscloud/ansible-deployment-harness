@@ -27,7 +27,7 @@ cat <<EOF
         "hosts" : [ "${nodes[0]}" ],
         "vars"  : {
             "openstack_network_external_ip" : "$openstack_network_external_ip",
-            "openstack_netmask_external_netmask" : "$openstack_netmask_external_netmask",
+            "openstack_netmask_external_netmask" : "$openstack_network_external_netmask",
             "openstack_network_external_network" : "$openstack_network_external_network",
             "openstack_network_external_allocation_pool_start" : "$openstack_network_external_allocation_pool_start",
             "openstack_network_external_allocation_pool_end" : "$openstack_network_external_allocation_pool_end",
@@ -38,7 +38,7 @@ cat <<EOF
         "hosts" : [ "${nodes[0]}" ],
         "vars"  : {
             "openstack_network_external_ip" : "$openstack_network_external_ip",
-            "openstack_netmask_external_netmask" : "$openstack_netmask_external_netmask",
+            "openstack_netmask_external_netmask" : "$openstack_network_external_netmask",
             "openstack_network_external_network" : "$openstack_network_external_network",
             "openstack_network_external_allocation_pool_start" : "$openstack_network_external_allocation_pool_start",
             "openstack_network_external_allocation_pool_end" : "$openstack_network_external_allocation_pool_end",
@@ -49,7 +49,7 @@ cat <<EOF
         "hosts" : [ "$(echo ${nodes[@]:1} | perl -lane 'print join "\", \"", @F')" ],
         "vars"  : {
             "openstack_network_external_ip" : "$openstack_network_external_ip",
-            "openstack_netmask_external_netmask" : "$openstack_netmask_external_netmask",
+            "openstack_netmask_external_netmask" : "$openstack_network_external_netmask",
             "openstack_network_external_network" : "$openstack_network_external_network",
             "openstack_network_external_allocation_pool_start" : "$openstack_network_external_allocation_pool_start",
             "openstack_network_external_allocation_pool_end" : "$openstack_network_external_allocation_pool_end",
