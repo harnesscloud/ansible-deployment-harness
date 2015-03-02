@@ -19,20 +19,37 @@
         - python-mysqldb
         - python-keystoneclient
 
-- hosts: all:!network
+- hosts: network
   sudo: True
   tasks:
 
-    - name: update static route configuration script
-      copy:
-        dest: /etc/network/if-up.d/openstack-demo-static-route
+    - name: update external network configuration from template
+      template:
+        src: etc/network/interfaces.d/external-network
+        dest: /etc/network/interfaces.d/external-network
         owner: root
         group: root
-        mode: 0755
-        content: "#!/bin/sh\nroute add -net 10.2.0.0/16 gw 10.1.0.3\n"
-      register: static_route_script
+        mode: 0644
 
-    - name: ensure that static route script is run at least once
-      command: /etc/network/if-up.d/openstack-demo-static-route
-      when: static_route_script|changed 
-      failed_when: false
+    - name: restart networking
+      service:
+        name: networking
+        state: restarted
+
+#- hosts: all:!network
+#  sudo: True
+#  tasks:
+
+#    - name: update static route configuration script
+#      copy:
+#        dest: /etc/network/if-up.d/openstack-demo-static-route
+#        owner: root
+#        group: root
+#        mode: 0755
+#        content: "#!/bin/sh\nroute add -net 10.2.0.0/16 gw 10.1.0.3\n"
+#      register: static_route_script
+
+#    - name: ensure that static route script is run at least once
+#      command: /etc/network/if-up.d/openstack-demo-static-route
+#      when: static_route_script|changed 
+#      failed_when: false
