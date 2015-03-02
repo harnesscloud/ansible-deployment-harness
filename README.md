@@ -5,6 +5,11 @@ The purpose of this ansible deployment is to configure and set up the HARNESS
 system on grid5000 for testing, experimentation, and demonstration. It is not
 intended for production use.
 
+Portions of this document are based on an existing howto for deploying vanilla
+OpenStack Grizzly:
+
+    https://www.grid5000.fr/mediawiki/index.php/OpenStack_Grizzly
+
 Preparation
 -----------
 
@@ -85,6 +90,7 @@ installed to your account. To update your deployment it may be necessary to
 "git pull" and then re-run the above-listed ansible-playbook command to update
 the roles.
 
+
 Deployment
 ----------
 
@@ -138,6 +144,7 @@ following two commands:
     ansible-playbook -i inventories/g5k.ini provisioning/prep.yml
     ansible-playbook -i inventories/g5k.ini provisioning/deploy.yml
 
+
 Using HARNESS on Grid5000
 -------------------------
 
@@ -171,13 +178,5 @@ http://stillwell.me
 Todo
 ----
 
-- roles should have distinct install and configuration phases only, with 
-  configuration occurring at startup in docker using a launch script, all
-  long-running processes should be managed by supervisor
-
-- all test/demo variables should be moved out of defaults/ and group_vars/ and
-  and set at the top of test.yml
-
-- every role should have a test and be set up for ci in travis...
-
-- consistent use of admin token vs admin login user and password for keystone...
+- dynamic inventory script
+- kavlan network isolation
