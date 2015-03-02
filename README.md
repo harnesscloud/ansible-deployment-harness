@@ -183,5 +183,4 @@ http://stillwell.me
 Todo
 ----
 
-- dynamic inventory script
-- kavlan network isolation
+- kavlan network isolation?
