@@ -29,7 +29,7 @@ cat <<EOF
             "openstack_network_external_network" : "$openstack_network_external_network",
             "openstack_network_external_allocation_pool_start" : "$openstack_network_external_allocation_pool_start",
             "openstack_network_external_allocation_pool_end" : "$openstack_network_external_allocation_pool_end",
-            "openstack_network_external_dns_servers" : "$openstack_network_external_dns_servers",
+            "openstack_network_external_dns_servers" : "$openstack_network_external_dns_servers"
         }
     },
     "network"    : {
@@ -39,7 +39,7 @@ cat <<EOF
             "openstack_network_external_network" : "$openstack_network_external_network",
             "openstack_network_external_allocation_pool_start" : "$openstack_network_external_allocation_pool_start",
             "openstack_network_external_allocation_pool_end" : "$openstack_network_external_allocation_pool_end",
-            "openstack_network_external_dns_servers" : "$openstack_network_external_dns_servers",
+            "openstack_network_external_dns_servers" : "$openstack_network_external_dns_servers"
         }
     },
     "compute"    : {
@@ -49,7 +49,7 @@ cat <<EOF
             "openstack_network_external_network" : "$openstack_network_external_network",
             "openstack_network_external_allocation_pool_start" : "$openstack_network_external_allocation_pool_start",
             "openstack_network_external_allocation_pool_end" : "$openstack_network_external_allocation_pool_end",
-            "openstack_network_external_dns_servers" : "$openstack_network_external_dns_servers",
+            "openstack_network_external_dns_servers" : "$openstack_network_external_dns_servers"
         }
     }
 }
