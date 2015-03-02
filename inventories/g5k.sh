@@ -10,7 +10,7 @@ nodes=($(sort -uV $OAR_NODE_FILE))
 cat <<EOF
 {
     "controller" : [ "${nodes[0]}" ],
-    "network"    : [ "${nodes[0]}" ]
+    "network"    : [ "${nodes[0]}" ],
     "compute"    : [ "$(echo ${nodes[@]:1} | perl -lane 'print join "\", \"", @F')" ]
 }
 EOF
