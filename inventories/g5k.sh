@@ -13,7 +13,7 @@ if [ ${#nodes[@]} -lt 2 ]; then
 fi
 
 openstack_network_external_ip=$(g5k-subnets -i | head -1)
-openstack_network_external_netmask=$(g5k-subnets -p | cut -d/ -f2)
+openstack_network_external_netmask=$(g5k-subnets -p | perl -F/ -lane 'print $F[1]')
 openstack_network_external_network=$(g5k-subnets -p)
 openstack_network_external_allocation_pool_start=$(g5k-subnets -i | head -2 | tail -1)
 openstack_network_external_allocation_pool_end=$(g5k-subnets -i | tail -1)
