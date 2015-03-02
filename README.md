@@ -96,11 +96,72 @@ deployment script.
 ### Step 1: request some nodes for the deployment from the scheduler
 
 The OAR scheduler is complicated, and the oarsub command can take a lot of
-options depending on exactly what you want. In it's most basic form you will need to run something like:
+options depending on exactly what you want (see:
+https://www.grid5000.fr/mediawiki/index.php/Advanced_OAR). In it's most basic
+form you will need to run something like:
 
     oarsub -t deploy -I -l /cluster=1/nodes=3,walltime=4:00:00
 
+In the above command "-t deploy" is required for a job that will involve
+deployment; that is, reinstalling the operating systems of the provisioned
+nodes. The option, "-I" says that the job is *interactive*, meaning that once
+the nodes are granted a new shell will be opened in the current session, with
+environment variables set to tell you what nodes you have access to and other
+required information. *If you exit out of this shell then you will lose the
+reservation*. Thus, all subsequent commands should be run from the same
+session/login as the oarsub command, and you should not exit this session until
+you are done with your reservation. The final option gives some information
+about what you want to reserve, in this case 3 nodes, all on the same cluster,
+for 4 hours. It is very important to follow the grid5000 user guidelines for
+acceptable usage when deciding on a number of nodes and how long you want the
+reservation for:
 
+    https://www.grid5000.fr/mediawiki/index.php/Grid5000:UserCharter
+
+### Step 2: install ubuntu 14 on to your reserved nodes
+
+Once you have a reservation, from the same session where you ran the oarsub
+command, run kadeploy to put a fresh install of ubuntu trusty on to your
+reserved nodes:
+
+    kadeploy3 -f $OAR_NODE_FILE -e ubuntu-x64-1404 -k
+
+The "-k" option on the end tells kadeploy to copy the contents of
+authorized_keys from your frontend account to the root account on each of your
+nodes.
+
+### Step 3: use ansible to prep your nodes and deploy the HARNESS platform
+
+Change to the ansible-deployment-harness-demo-g5k directory and run the
+following two commands:
+
+    ansible-playbook -i inventories/g5k.ini provisioning/prep.yml
+    ansible-playbook -i inventories/g5k.ini provisioning/deploy.yml
+
+Using HARNESS on Grid5000
+-------------------------
+
+As the environment within the grid5000 clusters is fairly insecure, a fair
+amount of effort has been put into isolating grid5000 from the wider internet.
+This means, for example, that nodes cannot directly access or be accessed from 
+outside. Obviously, it should be possible to ssh to the root account of any node 
+from the frontend machine. In order to access web services running on the nodes 
+you may need to tunnel traffic over ssh, for example by using "ssh -D".
+
+For any node running a web server; a service running on port 80 can be accessed
+through a URL that follows this scheme:
+
+    https://mynode.mysite.proxy-http.grid5000.fr/
+
+Services running with SSL on port 443 can be accessed more directly:
+
+    https://mynode.mysite.grid5000.fr/
+
+If, while on a node, you need to download something from the internet, do not
+forget that you may need to set the http_proxy or https_proxy environment
+variables to do so, and that even then the most straightforward thing to do
+might be to use scp to copy your files to the frontend and then again to copy
+from the frontend to the nodes.
 
 Author Information
 ------------------
