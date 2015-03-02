@@ -1,4 +1,7 @@
 ---
+upgrade_enable_reboot_on_kernel_change: false
+upgrade_enable_automatic_reboot: false
+
 openstack_run_dir: "{{ lookup('env', 'PWD') }}"
 openstack_identity_admin_token: >
   {{ lookup('password', openstack_run_dir +
@@ -8,10 +11,13 @@ openstack_identity_admin_token: >
 
 mariadb_bind_address: "0.0.0.0"
 
-openstack_rabbitmq_host: "10.1.0.2"
-openstack_mysql_host: "10.1.0.2"
+openstack_controller_ip: "{{ hostvars[groups.controller.[0]].ansible_default_ipv4.address }}"
+openstack_network_ip: "{{ hostvars[groups.network[0]].ansible_default_ipv4.address }}"
 
-openstack_identity_endpoint_host: "10.1.0.2"
+openstack_rabbitmq_host: "{{ openstack_controller_ip }}"
+openstack_mysql_host: "{{ openstack_controller_ip }}"
+
+openstack_identity_endpoint_host: "{{ openstack_controller_ip }}"
 openstack_identity_admin_url: >
   http://{{ openstack_identity_endpoint_host }}:35357/v2.0
 openstack_identity_internal_url: >
@@ -19,19 +25,16 @@ openstack_identity_internal_url: >
 openstack_identity_public_url: >
   http://{{ openstack_identity_endpoint_host }}:5000/v2.0
 
-openstack_image_endpoint_host: "10.1.0.2"
-openstack_compute_endpoint_host: "10.1.0.2"
-openstack_network_endpoint_host: "10.1.0.2"
+openstack_image_endpoint_host: "{{ openstack_controller_ip }}"
+openstack_compute_endpoint_host: "{{ openstack_controller_ip }}"
+openstack_network_endpoint_host: "{{ openstack_controller_ip }}"
 
 openstack_default_region: RegionOne
 
+openstack_compute_node_ip: "{{ ansible_default_ipv4.address }}"
+openstack_network_node_ip: "{{ ansible_default_ipv4.address }}"
 
-openstack_compute_node_ip: "{{ ansible_eth1.ipv4.address }}"
-
-
-openstack_network_node_ip: "{{ ansible_eth1.ipv4.address }}"
-
-openstack_network_external_device: "eth2"
+openstack_network_external_device: "eth0"
 openstack_network_external_ip: "10.2.0.3"
 openstack_network_external_netmask: "16"
 openstack_network_external_network: "{{ openstack_network_external_ip }}/{{ openstack_network_external_netmask }}"
