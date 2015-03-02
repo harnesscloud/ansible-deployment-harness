@@ -1,11 +1,16 @@
 #!/bin/bash
 
-if [ $1 = "--host" ] || [ -z "$OAR_NODE_FILE" ]; then
+if [ "$1" = "--host" ] || [ -z "$OAR_NODE_FILE" ]; then
     echo "{}"
     exit 0
 fi
 
 nodes=($(sort -uV $OAR_NODE_FILE))
+
+if [ ${#nodes[@]} -lt 2 ]; then
+    echo "{}"
+    exit 0
+fi
 
 cat <<EOF
 {
