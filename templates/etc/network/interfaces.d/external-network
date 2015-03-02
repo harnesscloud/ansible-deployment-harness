@@ -1,5 +1,5 @@
 auto {{ openstack_network_external_device }}:0
-iface {{ openstack_network_external_device }} inet static
+iface {{ openstack_network_external_device }}:0 inet static
 address {{ openstack_network_external_ip }}
 network {{ openstack_network_external_network }}
 netmask {{ openstack_network_external_netmask }}
