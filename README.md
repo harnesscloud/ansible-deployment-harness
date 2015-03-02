@@ -22,9 +22,9 @@ each grid5000 site that you intend to use.
 
 On Grid5000 nodes do not have direct access to the outside network, so it is
 necessary to set the http_proxy and https_proxy environment variables to the
-value "http://proxy:3128". Also, you will need to install ansible to your local 
-account, so ~/.local/bin needs to be in the path. The easiest thing is to do is 
-to edit your .bashrc file on the front end node to include the following lines:
+value "http://proxy:3128". Also, you will need to install ansible to your local
+account, so ~/.local/bin needs to be in the path. The easiest thing is to do is
+to edit your .profile on the frontend to include the following lines:
 
     export http_proxy=http://proxy:3128
     export https_proxy=$http_proxy
@@ -112,7 +112,7 @@ options depending on exactly what you want (see:
 https://www.grid5000.fr/mediawiki/index.php/Advanced_OAR). In it's most basic
 form you will need to run something like:
 
-    oarsub -t deploy -I -l /cluster=1/nodes=3,walltime=4:00:00
+    oarsub -t deploy -I -l slash_22=1+cluster=1/nodes=3,walltime=4:00:00
 
 In the above command "-t deploy" is required for a job that will involve
 deployment; that is, reinstalling the operating systems of the provisioned
@@ -149,7 +149,6 @@ following two commands:
 
     ansible-playbook -i inventories/g5k.ini provisioning/prep.yml
     ansible-playbook -i inventories/g5k.ini provisioning/deploy.yml
-
 
 Using HARNESS on Grid5000
 -------------------------

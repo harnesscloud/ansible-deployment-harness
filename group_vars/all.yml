@@ -9,7 +9,7 @@ openstack_identity_admin_token: >
                          length=20
                          chars=ascii_letters,digits') }}
 
-mariadb_bind_address: "0.0.0.0"
+mysql_bind_address: "0.0.0.0"
 
 openstack_controller_ip: "{{ hostvars[groups.controller[0]].ansible_default_ipv4.address }}"
 openstack_network_ip: "{{ hostvars[groups.network[0]].ansible_default_ipv4.address }}"
