@@ -32,8 +32,8 @@ cat <<EOF
             "openstack_network_external_ip" : "$openstack_network_external_ip",
             "openstack_network_external_network" : "$openstack_network_external_network",
             "openstack_netmask_external_netmask" : "$openstack_network_external_netmask",
-            "openstack_network_external_network" : "$openstack_network_external_broadcast",
-            "openstack_network_external_network" : "$openstack_network_external_gateway",
+            "openstack_network_external_broadcast" : "$openstack_network_external_broadcast",
+            "openstack_network_external_gateway" : "$openstack_network_external_gateway",
             "openstack_network_external_allocation_pool_start" : "$openstack_network_external_allocation_pool_start",
             "openstack_network_external_allocation_pool_end" : "$openstack_network_external_allocation_pool_end",
             "openstack_network_external_dns_servers" : "$openstack_network_external_dns_servers"
