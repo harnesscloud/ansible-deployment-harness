@@ -124,9 +124,9 @@ reservation*. Thus, all subsequent commands should be run from the same
 session/login as the oarsub command, and you should not exit this session until
 you are done with your reservation. The final option gives some information
 about what you want to reserve, in this case 3 nodes, all on the same cluster,
-for 4 hours. It is very important to follow the grid5000 user guidelines for
-acceptable usage when deciding on a number of nodes and how long you want the
-reservation for:
+with a /22 subnet, for 4 hours. It is very important to follow the grid5000
+user guidelines for acceptable usage when deciding on a number of nodes and how
+long you want the reservation for:
 
     https://www.grid5000.fr/mediawiki/index.php/Grid5000:UserCharter
 
