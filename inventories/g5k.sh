@@ -1,6 +1,7 @@
 #!/bin/bash
 
-if [ -z "$OAR_NODE_FILE" ]; then
+if [ $1 = "--host" ] || [ -z "$OAR_NODE_FILE" ]; then
+    echo "{}"
     exit 0
 fi
 
