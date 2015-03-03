@@ -6,9 +6,8 @@ system on grid5000 for testing, experimentation, and demonstration. It is not
 intended for production use.
 
 Portions of this document are based on an existing howto for deploying vanilla
-OpenStack Grizzly:
-
-    https://www.grid5000.fr/mediawiki/index.php/OpenStack_Grizzly
+OpenStack Grizzly: 
+[link](https://www.grid5000.fr/mediawiki/index.php/OpenStack_Grizzly).
 
 Preparation
 -----------
@@ -125,10 +124,10 @@ session/login as the oarsub command, and you should not exit this session until
 you are done with your reservation. The final option gives some information
 about what you want to reserve, in this case 3 nodes, all on the same cluster,
 with a /22 subnet, for 4 hours. It is very important to follow the grid5000
-user guidelines for acceptable usage when deciding on a number of nodes and how
-long you want the reservation for:
+[user guidelines](https://www.grid5000.fr/mediawiki/index.php/Grid5000:UserCharter)
+for acceptable usage when deciding on a number of nodes and for how long you
+want the reservation.
 
-    https://www.grid5000.fr/mediawiki/index.php/Grid5000:UserCharter
 
 ### Step 2: install ubuntu 14 on to your reserved nodes
 
@@ -145,9 +144,9 @@ nodes.
 ### Step 3: use ansible to deploy the HARNESS platform
 
 Change to the ansible-deployment-harness-demo-g5k directory and run the
-following two commands:
+following command:
 
-    ansible-playbook -i inventories/g5k.ini provisioning/deploy.yml
+    ansible-playbook -i inventories/g5k.sh provisioning/deploy.yml
 
 Using HARNESS on Grid5000
 -------------------------
