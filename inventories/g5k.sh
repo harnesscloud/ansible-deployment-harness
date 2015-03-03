@@ -13,6 +13,7 @@ if [ ${#nodes[@]} -lt 2 ]; then
 fi
 
 openstack_network_external_ip=$(g5k-subnets -i | head -1)
+openstack_network_external_netmask=$(g5k-subnets -p | cut -d/ -f2)
 openstack_network_external_network=$(g5k-subnets -p)
 openstack_network_external_broadcast=$(g5k-subnets -bN)
 openstack_network_external_gateway=$(g5k-subnets -gN)
@@ -29,6 +30,7 @@ cat <<EOF
         "hosts" : [ "${nodes[0]}" ],
         "vars"  : {
             "openstack_network_external_ip" : "$openstack_network_external_ip",
+            "openstack_network_external_netmask" : "$openstack_network_external_netmask",
             "openstack_network_external_network" : "$openstack_network_external_network",
             "openstack_network_external_broadcast" : "$openstack_network_external_broadcast",
             "openstack_network_external_gateway" : "$openstack_network_external_gateway",
