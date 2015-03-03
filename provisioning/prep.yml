@@ -19,23 +19,6 @@
         - python-mysqldb
         - python-keystoneclient
 
-- hosts: network
-  sudo: True
-  tasks:
-
-    - name: update external network configuration from template
-      template:
-        src: templates/etc/network/interfaces.d/external-network
-        dest: /etc/network/interfaces.d/external-network
-        owner: root
-        group: root
-        mode: 0644
-
-    - name: restart networking
-      service:
-        name: networking
-        state: restarted
-
 #- hosts: all:!network
 #  sudo: True
 #  tasks:

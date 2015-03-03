@@ -184,3 +184,4 @@ Todo
 ----
 
 - kavlan network isolation?
+- kernel updates on nodes?

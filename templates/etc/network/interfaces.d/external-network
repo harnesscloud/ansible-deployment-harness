@@ -1,7 +1,0 @@
-auto {{ openstack_network_external_device }}:0
-iface {{ openstack_network_external_device }}:0 inet static
-address {{ openstack_network_external_ip }}
-network {{ openstack_network_external_network }}
-netmask {{ openstack_network_external_netmask }}
-broadcast {{ openstack_network_external_broadcast }}
-gateway {{ openstack_network_external_gateway }} 
