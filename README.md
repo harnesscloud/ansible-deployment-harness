@@ -33,7 +33,7 @@ to edit your .profile on the frontend to include the following lines:
 ### Step 2: install ansible
 
 Assuming that you have completed step 1 correctly and reloaded your environment
-(source ~/.bashrc or logout and then log in again), you should be able to
+(source ~/.profile or logout and then log in again), you should be able to
 install ansible to your home directory with the following command:
 
     easy_install --user ansible
