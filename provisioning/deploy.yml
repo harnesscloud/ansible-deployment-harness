@@ -1,4 +1,21 @@
 ---
+- hosts: all
+  sudo: True
+  roles:
+    - chrony
+
+- hosts: controller
+  sudo: True
+  tasks:
+
+    - name: ensure required packages for prep are installed
+      apt:
+        pkg: "{{ item }}"
+        state: latest
+        update_cache: yes
+        cache_valid_time: 600
+      with_items:
+
 - hosts: controller
   sudo: True
   roles:

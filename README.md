@@ -142,12 +142,11 @@ The "-k" option on the end tells kadeploy to copy the contents of
 authorized_keys from your frontend account to the root account on each of your
 nodes.
 
-### Step 3: use ansible to prep your nodes and deploy the HARNESS platform
+### Step 3: use ansible to deploy the HARNESS platform
 
 Change to the ansible-deployment-harness-demo-g5k directory and run the
 following two commands:
 
-    ansible-playbook -i inventories/g5k.ini provisioning/prep.yml
     ansible-playbook -i inventories/g5k.ini provisioning/deploy.yml
 
 Using HARNESS on Grid5000
