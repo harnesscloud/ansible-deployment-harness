@@ -150,19 +150,26 @@ nodes.
 ### Step 3: use ansible to deploy the HARNESS platform
 
 Change to the ansible-deployment-harness-demo-g5k directory and run the
-following command:
+following two commands:
 
+    ansible-playbook -i inventories/g5k.sh provisioning/prep.yml
     ansible-playbook -i inventories/g5k.sh provisioning/deploy.yml
 
-Using HARNESS on Grid5000
+The purpose of the "prep.yml" playbook is to disable the http_proxy variable on
+the nodes. While this proxy is needed to access external sites, its presence
+will cause the "neutron" command to fail. This reason that only the neutron
+command-line client is affected is that it is implemented using
+python-httplib2, while the other clients are not.
+
+Using HARNESS on Grid5000 
 -------------------------
 
 As the environment within the grid5000 clusters is fairly insecure, a fair
 amount of effort has been put into isolating grid5000 from the wider internet.
-This means, for example, that nodes cannot directly access or be accessed from 
-outside. Obviously, it should be possible to ssh to the root account of any node 
-from the frontend machine. In order to access web services running on the nodes 
-you may need to tunnel traffic over ssh, for example by using "ssh -D".
+This means, for example, that nodes cannot directly access or be accessed from
+outside. Obviously, it should be possible to ssh to the root account of any
+node from the frontend machine. In order to access web services running on the
+nodes you may need to tunnel traffic over ssh, for example by using "ssh -D".
 
 For any node running a web server; a service running on port 80 can be accessed
 through a URL that follows this scheme:
