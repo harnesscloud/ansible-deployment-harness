@@ -1,17 +1,12 @@
 ---
-#- hosts: all
-#  sudo: True
-#  tasks:
-#    - name: remove grid5000 repository
-#      lineinfile:
-#        dest: /etc/apt/sources.list
-#        regexp: '^deb http://apt.nancy.grid5000.fr/debian sid main'
-#        state: absent
-#
-#    - name: upgrade software packages to latest version
-#      apt:
-#        update_cache: yes
-#        upgrade: safe
+- hosts: all
+  sudo: True
+  tasks:
+    - name: disable grid5000 http_proxy by default
+      lineinfile:
+        dest: /etc/environment
+        regexp: '^http_proxy="http://proxy:3128"'
+        state: absent
 
 - hosts: all
   sudo: True
