@@ -1,7 +1,5 @@
 ---
-upgrade_enable_reboot_on_kernel_change: false
-upgrade_enable_automatic_reboot: false
-
+# FIXME: how many of these could be eliminated?
 openstack_run_dir: "{{ lookup('env', 'PWD') }}"
 openstack_identity_admin_token: >
   {{ lookup('password', openstack_run_dir +

@@ -12,9 +12,7 @@
         dest: roles/{{ item }}
         update: yes
       with_items:
-        - upgrade
         - chrony
-        - docker
         - mysql
         - rabbitmq-server
         - keystone
