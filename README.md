@@ -190,6 +190,11 @@ particular, setting the http_proxy environment variable will cause the neutron
 command to fail with a 403 error, while keystone, glance, and nova are not
 affected.
 
+You can also use easy_install or pip to install the command lines to your home 
+directory on the frontend machine, download the admin or demo .openrc files and 
+run commands from the front end. Don't forget to disable the http_proxy 
+environment variable if you need to use the neutron command.
+
 Author Information
 ------------------
 
