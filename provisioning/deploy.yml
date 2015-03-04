@@ -1,6 +1,16 @@
 ---
 - hosts: all
   sudo: True
+  connection: ssh
+  tasks:
+    - name: disable grid5000 http_proxy by default
+      lineinfile:
+        dest: /etc/environment
+        regexp: '^http_proxy="http://proxy:3128"'
+        state: absent
+
+- hosts: all
+  sudo: True
   roles:
     - chrony
 
