@@ -150,16 +150,9 @@ nodes.
 ### Step 3: use ansible to deploy the HARNESS platform
 
 Change to the ansible-deployment-harness-demo-g5k directory and run the
-following two commands:
+following command:
 
-    ansible-playbook -i inventories/g5k.sh provisioning/prep.yml
     ansible-playbook -i inventories/g5k.sh provisioning/deploy.yml
-
-The purpose of the "prep.yml" playbook is to disable the http_proxy variable on
-the nodes. While this proxy is needed to access external sites, its presence
-will cause the "neutron" command to fail. This reason that only the neutron
-command-line client is affected is that it is implemented using
-python-httplib2, while the other clients are not.
 
 Using HARNESS on Grid5000 
 -------------------------
