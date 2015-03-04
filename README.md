@@ -79,9 +79,9 @@ https://www.grid5000.fr/mediawiki/index.php/SSH#SSH_key_passphrase).
 ### Step 4: clone the ansible-deployment-harness-demo-g5k repository
 
 As the gitlab.harness-project.eu site is not accessible through the g5k proxy,
-use the bitbucket URL to clone the project:
+use the github URL to clone the project:
 
-    git clone https://bitbucket.org/marklee77/ansible-deployment-harness-demo-g5k.git
+    git clone https://github.com/harnesscloud/ansible-deployment-harness-demo-g5k.git
     
 To get the ansible roles used by this deployment, cd to the
 ansible-deployment-harness-demo-g5k directory and run the following command:
@@ -112,7 +112,7 @@ deployment script.
 ### Step 1: request some nodes for the deployment from the scheduler
 
 The OAR scheduler is complicated, and the oarsub command can take a lot of
-options depending on exactly what you want (see:
+options depending on exactly what you want (ref:
 https://www.grid5000.fr/mediawiki/index.php/Advanced_OAR). In it's most basic
 form you will need to run something like:
 
