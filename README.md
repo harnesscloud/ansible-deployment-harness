@@ -6,8 +6,8 @@ system on grid5000 for testing, experimentation, and demonstration. It is not
 intended for production use.
 
 Portions of this document are based on an existing howto for deploying vanilla
-OpenStack Grizzly: 
-[link](https://www.grid5000.fr/mediawiki/index.php/OpenStack_Grizzly).
+OpenStack Grizzly (ref:
+https://www.grid5000.fr/mediawiki/index.php/OpenStack_Grizzly).
 
 Preparation
 -----------
@@ -72,6 +72,10 @@ To make sure that the key will be propagated to your nodes run:
 It is important that this insecure key *only* be used on grid5000, for the
 purpose of accessing temporarily assigned nodes from the frontend.
 
+This recommendation for managing ssh keys is consistent with the official
+grid5000 documentation (ref:
+https://www.grid5000.fr/mediawiki/index.php/SSH#SSH_key_passphrase).
+
 ### Step 4: clone the ansible-deployment-harness-demo-g5k repository
 
 As the gitlab.harness-project.eu site is not accessible through the g5k proxy,
@@ -95,6 +99,7 @@ ansible. It needs to be executable, but git does not manage file permissions,
 so be sure to set the executable bit on this file:
 
     chmod +x inventories/g5k.sh
+
 
 Deployment
 ----------
