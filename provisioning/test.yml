@@ -75,6 +75,8 @@
         role: admin
 
     - name: ensure internal network is registered
+      environment:
+        http_proxy: ''
       neutron_network:
         auth_url: "{{ openstack_identity_public_url }}"
         login_tenant_name: demo
@@ -86,6 +88,8 @@
       register: openstack_network_internal
 
     - name: ensure subnet internal network is registered
+      environment:
+        http_proxy: ''
       neutron_subnet:
         auth_url: "{{ openstack_identity_public_url }}"
         login_tenant_name: demo
@@ -101,6 +105,8 @@
         state: present
 
     - name: ensure router exists
+      environment:
+        http_proxy: ''
       neutron_router:
         auth_url: "{{ openstack_identity_public_url }}"
         login_tenant_name: demo
@@ -111,6 +117,8 @@
         state: present
 
     - name: ensure router has interface connected to internal network
+      environment:
+        http_proxy: ''
       neutron_router_interface:
         auth_url: "{{ openstack_identity_public_url }}"
         login_tenant_name: demo
@@ -122,6 +130,8 @@
         state: present
 
     - name: ensure router has external network gateway
+      environment:
+        http_proxy: ''
       neutron_router_gateway:
         auth_url: "{{ openstack_identity_public_url }}"
         login_tenant_name: demo
@@ -187,6 +197,8 @@
         state: present
 
     - name: ensure floating ip is associated with vm instance
+      environment:
+        http_proxy: ''
       neutron_floating_ip:
         auth_url: "{{ openstack_identity_public_url }}"
         login_tenant_name: demo
