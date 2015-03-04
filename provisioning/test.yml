@@ -41,6 +41,13 @@
         dest: "{{ ansible_env.PWD }}/demo.openrc"
         mode: 0600
 
+    - name: ensure that cirros image has been downloaded
+      get_url:
+        url: "{{ cirros_url }}"
+        dest: /tmp/cirros.img
+      environment:
+        http_proxy: http://proxy:3128
+
     - name: ensure cirros image is registered
       glance_image:
         auth_url: "{{ openstack_identity_public_url }}"
@@ -49,7 +56,7 @@
         login_password: "{{ openstack_identity_demo_password }}"
         name: cirros
         disk_format: qcow2
-        copy_from: "{{ cirros_url }}"
+        file: /tmp/cirros.img
         is_public: True
         timeout: 1200
         state: present
@@ -66,12 +73,6 @@
         tenant: demo
         user: demo
         role: admin
-
-    - name: update demo.openrc from template
-      template:
-        src: templates/demo.openrc
-        dest: "{{ ansible_env.PWD }}/demo.openrc"
-        owner: "{{ ansible_ssh_user }}"
 
     - name: ensure internal network is registered
       neutron_network:
