@@ -1,6 +1,15 @@
 ---
 - hosts: all
   sudo: True
+  tasks:
+    - name: remove grid5000 repository
+      lineinfile:
+        dest: /etc/apt/sources.list
+        regexp: '^deb http://apt.nancy.grid5000.fr/debian sid main'
+        state: absent
+
+- hosts: all
+  sudo: True
   roles:
     - chrony
 
