@@ -8,6 +8,11 @@
         regexp: '^deb http://apt.nancy.grid5000.fr/debian sid main'
         state: absent
 
+    - name: upgrade software packages to latest version
+      apt:
+        update_cache: yes
+        upgrade: safe
+
 - hosts: all
   sudo: True
   roles:
