@@ -154,6 +154,13 @@ following command:
 
     ansible-playbook -i inventories/g5k.sh provisioning/deploy.yml
 
+### Step 4: set up the demo environment and run automated tests
+
+The following command creates the demo network, installs the cirros image to
+glance, boots a vm, and verifies connectivity:
+
+    ansible-playbook -i inventories/g5k.sh provisioning/test.yml
+
 Using HARNESS on Grid5000 
 -------------------------
 
