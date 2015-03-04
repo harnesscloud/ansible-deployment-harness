@@ -101,6 +101,7 @@ so be sure to set the executable bit on this file:
     chmod +x inventories/g5k.sh
 
 
+
 Deployment
 ----------
 
@@ -176,7 +177,11 @@ If, while on a node, you need to download something from the internet, do not
 forget that you may need to set the http_proxy or https_proxy environment
 variables to do so, and that even then the most straightforward thing to do
 might be to use scp to copy your files to the frontend and then again to copy
-from the frontend to the nodes.
+from the frontend to the nodes. *It is important to not set this variable by
+default on the controller as it can break some of the command-line clients*. In
+particular, setting the http_proxy environment variable will cause the neutron
+command to fail with a 403 error, while keystone, glance, and nova are not
+affected.
 
 Author Information
 ------------------
