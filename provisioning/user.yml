@@ -1,0 +1,49 @@
+---
+- hosts: controller
+  sudo: False
+  vars:
+    openstack_identity_demo_password: password
+  tasks:
+
+    - name: update admin.openrc from template
+      template:
+        src: templates/admin.openrc
+        dest: "{{ ansible_env.PWD }}/admin.openrc"
+        owner: "{{ ansible_ssh_user }}"
+
+    - name: create demo tenant
+      keystone_user:
+        endpoint: "{{ openstack_identity_admin_url }}"
+        token: "{{ openstack_identity_admin_token }}"
+        tenant: demo
+        tenant_description: "Demo Tenant"
+
+    - name: create demo user
+      keystone_user:
+        endpoint: "{{ openstack_identity_admin_url }}"
+        token: "{{ openstack_identity_admin_token }}"
+        tenant: demo
+        user: demo
+        password: "{{ openstack_identity_demo_password }}"
+
+    - name: associate _member_ role with demo user
+      keystone_user:
+        endpoint: "{{ openstack_identity_admin_url }}"
+        token: "{{ openstack_identity_admin_token }}"
+        tenant: demo
+        user: demo
+        role: _member_
+
+    - name: associate admin role with demo user
+      keystone_user:
+        endpoint: "{{ openstack_identity_admin_url }}"
+        token: "{{ openstack_identity_admin_token }}"
+        tenant: demo
+        user: demo
+        role: admin
+
+    - name: update demo.openrc template
+      template:
+        src: templates/demo.openrc
+        dest: "{{ ansible_env.PWD }}/demo.openrc"
+        mode: 0600
