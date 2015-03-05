@@ -44,11 +44,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
 
     machine.vm.provision "ansible" do |ansible|
-      ansible.playbook = "provisioning/prep.yml"
-      ansible.limit = 'all'
-    end
-
-    machine.vm.provision "ansible" do |ansible|
       ansible.playbook = "provisioning/deploy.yml"
       ansible.groups = {
         "compute" => ["compute-001"]
