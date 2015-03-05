@@ -45,8 +45,6 @@
       get_url:
         url: "{{ cirros_url }}"
         dest: /tmp/cirros.img
-      environment:
-        http_proxy: http://proxy:3128
 
     - name: ensure cirros image is registered
       glance_image:

@@ -1,3 +1,5 @@
+echo "setting demo user login variables and disabling http_proxy"
+unset http_proxy
 unset OS_SERVICE_TOKEN
 unset OS_SERVICE_ENDPOINT
 export OS_USERNAME=demo
