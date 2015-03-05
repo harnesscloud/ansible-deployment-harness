@@ -205,3 +205,5 @@ Todo
 
 - kavlan network isolation?
 - kernel updates on nodes?
+- rename or change usage of openstack_network_external_dns_servers?
+- also openstack_network_external_broadcast...
