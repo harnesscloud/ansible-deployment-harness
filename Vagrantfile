@@ -10,8 +10,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     machine.vm.hostname = "network"
     machine.vm.network :private_network, ip: "10.1.0.3",
                        :netmask => "255.255.0.0"
-    machine.vm.network :private_network, ip: "10.2.0.3",
-                       :netmask => "255.255.0.0"
     machine.vm.provider :virtualbox do |v| 
       v.customize ["modifyvm", :id, "--memory", 1280]
       v.customize ["modifyvm", :id, "--nicpromisc2", "allow-vms"]
@@ -56,12 +54,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         openstack_compute_node_ip: "{{ ansible_eth1.ipv4.address }}",
         openstack_network_node_ip: "{{ ansible_eth1.ipv4.address }}",
         openstack_network_external_device: "eth1",
-        openstack_network_external_ip: "10.2.0.3",
+        openstack_network_external_ip: "10.1.0.3",
         openstack_network_external_netmask: 16,
-        openstack_network_external_network: "10.2.0.0/16",
-        openstack_network_external_gateway: "10.2.0.3",
-        openstack_network_external_allocation_pool_start: "10.2.0.100",
-        openstack_network_external_allocation_pool_end: "10.2.0.200",
+        openstack_network_external_network: "10.1.0.0/16",
+        openstack_network_external_gateway: "10.1.0.3",
+        openstack_network_external_allocation_pool_start: "10.1.0.100",
+        openstack_network_external_allocation_pool_end: "10.1.0.200",
         openstack_network_external_dns_servers: "8.8.8.8"
  
       }
@@ -81,12 +79,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         openstack_compute_node_ip: "{{ ansible_eth1.ipv4.address }}",
         openstack_network_node_ip: "{{ ansible_eth1.ipv4.address }}",
         openstack_network_external_device: "eth1",
-        openstack_network_external_ip: "10.2.0.3",
+        openstack_network_external_ip: "10.1.0.3",
         openstack_network_external_netmask: 16,
-        openstack_network_external_network: "10.2.0.0/16",
-        openstack_network_external_gateway: "10.2.0.3",
-        openstack_network_external_allocation_pool_start: "10.2.0.100",
-        openstack_network_external_allocation_pool_end: "10.2.0.200",
+        openstack_network_external_network: "10.1.0.0/16",
+        openstack_network_external_gateway: "10.1.0.3",
+        openstack_network_external_allocation_pool_start: "10.1.0.100",
+        openstack_network_external_allocation_pool_end: "10.1.0.200",
         openstack_network_external_dns_servers: "8.8.8.8"
  
       }

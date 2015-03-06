@@ -169,7 +169,7 @@ amount of effort has been put into isolating grid5000 from the wider internet.
 This means, for example, that nodes cannot directly access or be accessed from
 outside. Obviously, it should be possible to ssh to the root account of any
 node from the frontend machine. In order to access web services running on the
-nodes you may need to tunnel traffic over ssh, for example by using "ssh -D".
+nodes you may need to tunnel traffic over ssh.
 
 For any node running a web server; a service running on port 80 can be accessed
 through a URL that follows this scheme:
@@ -203,5 +203,6 @@ http://stillwell.me
 Todo
 ----
 
+- setting up tunnels with ssh...
 - kavlan network isolation?
 - kernel updates on nodes?
