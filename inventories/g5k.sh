@@ -12,7 +12,7 @@ if [ ${#nodes[@]} -lt 2 ]; then
     exit 0
 fi
 
-openstack_network_external_network="$(g5k-subnets -G)/14"
+openstack_network_external_network="$(g5k-subnets -GN)/14"
 openstack_network_external_gateway=$(g5k-subnets -gN)
 openstack_network_external_allocation_pool_start=$(g5k-subnets -i | head -1)
 openstack_network_external_allocation_pool_end=$(g5k-subnets -i | tail -1)
