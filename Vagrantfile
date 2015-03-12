@@ -50,7 +50,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       }
       ansible.extra_vars = {
         openstack_controller_ip: "10.1.0.2",
-        openstack_network_ip: "10.1.0.3",
         openstack_compute_node_ip: "{{ ansible_eth1.ipv4.address }}",
         openstack_network_node_ip: "{{ ansible_eth1.ipv4.address }}",
         openstack_network_external_device: "eth1",
