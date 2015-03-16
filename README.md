@@ -220,12 +220,3 @@ Author Information
 ------------------
 
 http://stillwell.me
-
-Todo
-----
-
-- setting up tunnels with ssh...
-- kavlan network isolation?
-- notes from gabriel
-- link to horizon
-
