@@ -9,6 +9,11 @@ Portions of this document are based on an existing howto for deploying vanilla
 OpenStack Grizzly (ref:
 https://www.grid5000.fr/mediawiki/index.php/OpenStack_Grizzly).
 
+You should make sure that you have
+reviewed the Grid5000 getting started guide (ref:
+https://www.grid5000.fr/mediawiki/index.php/Getting_Started) before proceeding
+if you have not previously worked with grid5000.
+
 Preparation
 -----------
 
@@ -130,10 +135,10 @@ session/login as the oarsub command, and you should not exit this session until
 you are done with your reservation. The final option gives some information
 about what you want to reserve, in this case 3 nodes, all on the same cluster,
 with a /22 subnet, for 4 hours. It is very important to follow the grid5000
-[user guidelines](https://www.grid5000.fr/mediawiki/index.php/Grid5000:UserCharter)
-for acceptable usage when deciding on a number of nodes and for how long you
-want the reservation.
-
+user guidelines (ref:
+https://www.grid5000.fr/mediawiki/index.php/Grid5000:UserCharter) for
+acceptable usage when deciding on a number of nodes and for how long you want
+the reservation.
 
 ### Step 2: install ubuntu 14 on to your reserved nodes
 
@@ -180,6 +185,11 @@ Services running with SSL on port 443 can be accessed more directly:
 
     https://mynode.mysite.grid5000.fr/
 
+In particular, the URL for the OpenStack horizon web front-end will follow this
+scheme:
+
+    https://mynode.mysite.grid5000.fr/horizon
+
 If, while on a node, you need to download something from the internet, do not
 forget that you may need to set the http_proxy or https_proxy environment
 variables to do so, and that even then the most straightforward thing to do
@@ -195,6 +205,17 @@ directory on the frontend machine, download the admin or demo .openrc files and
 run commands from the front end. Don't forget to disable the http_proxy 
 environment variable if you need to use the neutron command.
 
+If you need to interact with your VMs or services from outside of grid5000 then
+you will first need to set up your local ssh configuration to use the
+ProxyCommand directive as described here on the G5K wiki (ref:
+https://www.grid5000.fr/mediawiki/index.php/SSH).
+
+Once this is set up correctly so that you can access a site by typing "ssh
+site.g5k" from the command line, you will be able to set up SOCKS proxy tunnels
+using the command "ssh -D PORT site.g5k". The use of ProxyCommand and SOCKS is
+beyond the scope of these instructions, but feel free to email the author about
+it.
+
 Author Information
 ------------------
 
@@ -205,5 +226,6 @@ Todo
 
 - setting up tunnels with ssh...
 - kavlan network isolation?
-- kernel updates on nodes?
-- repeatability, cannot depend on eth1.address...
+- notes from gabriel
+- link to horizon
+
