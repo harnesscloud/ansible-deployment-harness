@@ -13,12 +13,13 @@
         update: yes
       with_items:
         - chrony
+        - docker
         - mysql
         - rabbitmq-server
         - keystone
         - glance
         - nova-controller
-        - nova-compute
+        - nova-compute-docker
         - neutron-controller
         - neutron-network
         - horizon

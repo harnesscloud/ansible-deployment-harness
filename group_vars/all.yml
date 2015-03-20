@@ -36,4 +36,6 @@ openstack_network_external_allocation_pool_start: "10.1.0.100"
 openstack_network_external_allocation_pool_end: "10.1.0.200"
 openstack_network_external_dns_servers: "8.8.8.8"
 
+openstack_compute_nova_docker_branch: harness-demo
+
 openstack_default_region: RegionOne
