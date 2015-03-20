@@ -1,9 +1,32 @@
 ---
-- hosts: controller
+- hosts: all
+  sudo: False
+  tasks:
+
+    - name: check for presence of docker image needed for demo instance
+      command: docker images
+      register: docker_image_check
+      changed_when: false
+
+    - name: pull docker image for demo-instance if necessary
+      command: docker pull marklee77/baseimage-cloud
+      when: -1 == docker_image_check.stdout.find("marklee77/baseimage-cloud")
+
+- hosts: axel07
   sudo: False
   vars:
-    cirros_url: http://cdn.download.cirros-cloud.net/0.3.3/cirros-0.3.3-x86_64-disk.img
+    openstack_run_dir: "{{ lookup('env', 'PWD') }}"
+    openstack_identity_admin_token: >
+      {{ lookup('password', openstack_run_dir +
+                            '/private/credentials/keystone-admin-token
+                             length=20
+                             chars=ascii_letters,digits') }}
+    openstack_identity_admin_url: >
+      http://{{ openstack_identity_endpoint_host }}:35357/v2.0
+    openstack_identity_public_url: >
+      http://{{ openstack_identity_endpoint_host }}:5000/v2.0
     openstack_identity_demo_password: password
+    cirros_url: http://cdn.download.cirros-cloud.net/0.3.3/cirros-0.3.3-x86_64-disk.img
   tasks:
 
     - name: update admin.openrc from template
@@ -41,25 +64,26 @@
         dest: "{{ ansible_env.PWD }}/demo.openrc"
         mode: 0600
 
-    - name: ensure that cirros image has been downloaded
-      get_url:
-        url: "{{ cirros_url }}"
-        dest: /tmp/cirros.img
+    - name: check to see if image has been registered with glance
+      command: glance --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name demo --os-username demo --os-password "{{ openstack_identity_demo_password }}" image-list
+      register: glance_image_check
+      changed_when: false
 
-    - name: ensure cirros image is registered
+    - name: import image into glance if necessary
+      shell: docker save marklee77/baseimage-cloud | glance --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name demo --os-username demo --os-password "{{ openstack_identity_demo_password }}" image-create --name=marklee77/baseimage-cloud --is-public=true --container-format=docker --disk-format=raw
+      when: -1 == glance_image_check.stdout.find("marklee77/baseimage-cloud")
+
+    - name: query glance for image id
       glance_image:
         auth_url: "{{ openstack_identity_public_url }}"
         login_tenant_name: demo
         login_username: demo
         login_password: "{{ openstack_identity_demo_password }}"
-        name: cirros
-        disk_format: qcow2
-        file: /tmp/cirros.img
-        is_public: True
-        timeout: 1200
+        name: marklee77/baseimage-cloud
+        file: /tmp/dummy
         state: present
-      register: cirros_image
-
+      register: demo_image
+    
     # Ansible neutron modules lists all tenants to get ids, but this is not
     # permitted for non-admin users. Need to fix neutron_* modules as non-admin
     # *should* be able to create networks, associate floating ips, etc.
@@ -72,9 +96,13 @@
         user: demo
         role: admin
 
+    - name: update demo.openrc from template
+      template:
+        src: templates/demo.openrc
+        dest: "{{ ansible_env.PWD }}/demo.openrc"
+        owner: "{{ ansible_ssh_user }}"
+
     - name: ensure internal network is registered
-      environment:
-        http_proxy: ''
       neutron_network:
         auth_url: "{{ openstack_identity_public_url }}"
         login_tenant_name: demo
@@ -86,8 +114,6 @@
       register: openstack_network_internal
 
     - name: ensure subnet internal network is registered
-      environment:
-        http_proxy: ''
       neutron_subnet:
         auth_url: "{{ openstack_identity_public_url }}"
         login_tenant_name: demo
@@ -103,8 +129,6 @@
         state: present
 
     - name: ensure router exists
-      environment:
-        http_proxy: ''
       neutron_router:
         auth_url: "{{ openstack_identity_public_url }}"
         login_tenant_name: demo
@@ -115,8 +139,6 @@
         state: present
 
     - name: ensure router has interface connected to internal network
-      environment:
-        http_proxy: ''
       neutron_router_interface:
         auth_url: "{{ openstack_identity_public_url }}"
         login_tenant_name: demo
@@ -128,8 +150,6 @@
         state: present
 
     - name: ensure router has external network gateway
-      environment:
-        http_proxy: ''
       neutron_router_gateway:
         auth_url: "{{ openstack_identity_public_url }}"
         login_tenant_name: demo
@@ -160,30 +180,22 @@
 
     # the neutron_sec_group module needs work...
     
-    - name: verify existence of demo security group
+    - name: verity existence of demo security group
       command: neutron --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name demo --os-username demo --os-password "{{ openstack_identity_demo_password }}" security-group-show demo-secgroup
-      environment:
-        http_proxy: ''
       register: verify_secgroup
       ignore_errors: yes
       changed_when: false
     
     - name: create demo-secgroup security group if necessary
       command: neutron --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name demo --os-username demo --os-password "{{ openstack_identity_demo_password }}" security-group-create demo-secgroup
-      environment:
-        http_proxy: ''
       when: verify_secgroup|failed
    
     - name: ensure that demo-secgroup allows ping
       command: neutron --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name demo --os-username demo --os-password "{{ openstack_identity_demo_password }}" security-group-rule-create --direction=ingress --protocol=icmp demo-secgroup
-      environment:
-        http_proxy: ''
       when: verify_secgroup|failed
 
     - name: ensure that demo-secgroup allows ssh
       command: neutron --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name demo --os-username demo --os-password "{{ openstack_identity_demo_password }}" security-group-rule-create --direction=ingress --protocol=tcp --port-range-min=22 --port-range-max=22 demo-secgroup
-      environment:
-        http_proxy: ''
       when: verify_secgroup|failed
 
     - name: create a new virtual machine instance
@@ -194,7 +206,7 @@
         login_password: "{{ openstack_identity_demo_password }}"
         name: demo-instance
         flavor_id: 1
-        image_id: "{{ cirros_image.id }}"
+        image_id: "{{ demo_image.id }}"
         nics:
           - net-id: "{{ openstack_network_internal.id }}"
         key_name: demo-keypair
@@ -203,8 +215,6 @@
         state: present
 
     - name: ensure floating ip is associated with vm instance
-      environment:
-        http_proxy: ''
       neutron_floating_ip:
         auth_url: "{{ openstack_identity_public_url }}"
         login_tenant_name: demo
@@ -225,5 +235,6 @@
       changed_when: false
 
     - name: verify that virtual machine can be logged into via ssh
-      command: ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no cirros@{{ demo_floating_ip.public_ip }} hostname
+      command: ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@{{ demo_floating_ip.public_ip }} hostname
       changed_when: false
+
