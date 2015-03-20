@@ -23,4 +23,5 @@
 - hosts: compute
   sudo: True
   roles:
+    - docker
     - nova-compute-docker
