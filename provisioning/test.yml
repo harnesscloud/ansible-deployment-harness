@@ -1,6 +1,6 @@
 ---
 - hosts: controller:compute
-  sudo: False
+  sudo: True
   tasks:
 
     - name: check for presence of docker image needed for demo instance
@@ -12,7 +12,7 @@
       command: docker pull marklee77/baseimage-cloud
       when: -1 == docker_image_check.stdout.find("marklee77/baseimage-cloud")
 
-- hosts: axel07
+- hosts: controller
   sudo: False
   vars:
     openstack_run_dir: "{{ lookup('env', 'PWD') }}"
@@ -95,12 +95,6 @@
         tenant: demo
         user: demo
         role: admin
-
-    - name: update demo.openrc from template
-      template:
-        src: templates/demo.openrc
-        dest: "{{ ansible_env.PWD }}/demo.openrc"
-        owner: "{{ ansible_ssh_user }}"
 
     - name: ensure internal network is registered
       neutron_network:
