@@ -28,6 +28,21 @@
 - hosts: controller:compute
   sudo: True
   tasks:
+
+    - name: ensure that docker is configured to use http_proxy
+      lineinfile:
+        dest: /etc/default/docker
+        regexp: export http_proxy=
+        line: export http_proxy="{{ lookup('ENV', 'http_proxy') }}"
+        state: present
+      register: docker_http_proxy
+
+    - name: restart docker if necessary
+      service:
+        name: docker
+        state: restarted
+      when: docker_http_proxy|changed
+
     - name: ensure that login user is in the docker group
       user:
         name: "{{ ansible_ssh_user }}"
