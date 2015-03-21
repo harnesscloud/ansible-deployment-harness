@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: controller:compute
   sudo: False
   tasks:
 

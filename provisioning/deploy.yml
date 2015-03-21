@@ -20,12 +20,12 @@
   roles:
     - neutron-network
 
-- hosts: compute
+- hosts: controller:compute
   sudo: True
   roles:
     - docker
 
-- hosts: compute
+- hosts: controller:compute
   sudo: True
   tasks:
     - name: ensure that login user is in the docker group
