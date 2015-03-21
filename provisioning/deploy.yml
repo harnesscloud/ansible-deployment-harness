@@ -4,6 +4,11 @@
   roles:
     - chrony
 
+- hosts: controller:compute
+  sudo: True
+  roles:
+    - docker
+
 - hosts: controller
   sudo: True
   roles:
@@ -20,10 +25,10 @@
   roles:
     - neutron-network
 
-- hosts: controller:compute
+- hosts: compute
   sudo: True
   roles:
-    - docker
+    - nova-compute-docker
 
 - hosts: controller:compute
   sudo: True
@@ -68,7 +73,52 @@
         name: docker-py
         state: latest
 
-- hosts: compute
-  sudo: True
-  roles:
-    - nova-compute-docker
+    - name: ensure docker image build directories exist
+      file:
+        path: "{{ item }}"
+        owner: "{{ ansible_ssh_user }}"
+        state: directory
+      with_items:
+        - "{{ ansible_env.PWD }}/.ansible_cache"
+        - "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild"
+
+    - name: copy ubuntu image to remote system
+      copy:
+        src: docker/ubuntu-14_04.tar.gz
+        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/"
+
+    - name: register list of docker images
+      environment:
+        http_proxy: ''
+      command: docker images
+      register: docker_image_check
+      changed_when: false
+
+    - name: load ubuntu image if necessary
+      environment:
+        http_proxy: ''
+      shell: gunzip -c {{ ansible_env.PWD }}/.ansible_cache/dockerbuild/ubuntu-14_04.tar.gz | docker load
+      when: -1 == docker_image_check.stdout.find("ubuntu")
+
+    - name: clone docker phusion/baseimage repository to remote system
+      git:
+        repo: https://github.com/phusion/baseimage-docker.git
+        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/phusion_baseimage-docker"
+
+    - name: ensure docker phusion/baseimage image has been built
+      docker_image:
+        name: phusion/baseimage
+        path: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/phusion_baseimage-docker/image"
+        state: present
+
+    - name: clone docker marklee77/docker-baseimage-cloud repository to remote system
+      git:
+        repo: https://github.com/marklee77/docker-baseimage-cloud.git
+        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/marklee77_docker-baseimage-cloud"
+
+    - name: ensure docker phusion/baseimage image has been built
+      docker_image:
+        name: marklee77/baseimage-cloud
+        path: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/marklee77_docker-baseimage-cloud"
+        state: present
+

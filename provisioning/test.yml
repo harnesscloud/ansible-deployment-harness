@@ -1,21 +1,4 @@
 ---
-- hosts: controller:compute
-  sudo: True
-  tasks:
-
-    - name: check for presence of docker image needed for demo instance
-      environment:
-        http_proxy: ''
-      command: docker images
-      register: docker_image_check
-      changed_when: false
-
-    - name: pull docker image for demo-instance if necessary
-      environment:
-        http_proxy: ''
-      command: docker pull marklee77/baseimage-cloud
-      when: -1 == docker_image_check.stdout.find("marklee77/baseimage-cloud")
-
 - hosts: controller
   sudo: False
   vars:
