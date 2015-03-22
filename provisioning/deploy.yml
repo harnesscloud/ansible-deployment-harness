@@ -37,7 +37,7 @@
     - name: ensure that docker is configured to use http_proxy
       lineinfile:
         dest: /etc/default/docker
-        line: export http_proxy="{{ lookup('ENV', 'http_proxy') }}"
+        line: export http_proxy="{{ ansible_env.http_proxy }}"
         regexp: export http_proxy=
         state: present
       register: docker_http_proxy
@@ -45,7 +45,7 @@
     - name: ensure that docker is configured to use http_proxy
       lineinfile:
         dest: /etc/default/docker
-        line: export HTTP_PROXY="{{ lookup('ENV', 'http_proxy') }}"
+        line: export HTTP_PROXY="{{ ansible_env.http_proxy }}"
         regexp: export HTTP_PROXY=
         insertafter: export http_proxy=
         state: present
@@ -105,7 +105,17 @@
         repo: https://github.com/phusion/baseimage-docker.git
         dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/phusion_baseimage-docker"
 
+    - name: ensure that phusion/baseimage build is configured to use http_proxy
+      lineinfile:
+        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/phusion_baseimage-docker/image/Dockerfile"
+        line: ENV http_proxy={{ ansible_env.http_proxy }}
+        regexp: ^ENV http_proxy=
+        insertafter: ^MAINTAINER
+        state: present
+
     - name: ensure docker phusion/baseimage image has been built
+      environment:
+        http_proxy: ''
       docker_image:
         name: phusion/baseimage
         path: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/phusion_baseimage-docker/image"
@@ -117,6 +127,8 @@
         dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/marklee77_docker-baseimage-cloud"
 
     - name: ensure docker marklee77/baseimage-cloud image has been built
+      environment:
+        http_proxy: ''
       docker_image:
         name: marklee77/baseimage-cloud
         path: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/marklee77_docker-baseimage-cloud"
