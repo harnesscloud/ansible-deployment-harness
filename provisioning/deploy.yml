@@ -109,8 +109,14 @@
       lineinfile:
         dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/phusion_baseimage-docker/image/Dockerfile"
         line: ENV http_proxy={{ ansible_env.http_proxy }}
-        regexp: ^ENV http_proxy=
         insertafter: ^MAINTAINER
+        state: present
+
+    - name: ensure that phusion/baseimage is configured to NOT use http_proxy at init...
+      lineinfile:
+        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/phusion_baseimage-docker/image/Dockerfile"
+        line: ENV http_proxy=''
+        insertbefore: ^CMD
         state: present
 
     - name: ensure docker phusion/baseimage image has been built
