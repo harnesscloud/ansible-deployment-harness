@@ -87,12 +87,12 @@
     #    src: docker/ubuntu-14_04.tar.gz
     #    dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/"
 
-    #- name: register list of docker images
-    #  environment:
-    #    http_proxy: ''
-    #  command: docker images
-    #  register: docker_image_check
-    #  changed_when: false
+    - name: register list of docker images
+      environment:
+        http_proxy: ''
+      command: docker images
+      register: docker_image_check
+      changed_when: false
 
     #- name: load ubuntu image if necessary
     #  environment:
@@ -105,20 +105,20 @@
         repo: https://github.com/phusion/baseimage-docker.git
         dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/phusion_baseimage-docker"
 
-    #- name: ensure docker phusion/baseimage image has been built
-    #  docker_image:
-    #    name: phusion/baseimage
-    #    path: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/phusion_baseimage-docker/image"
-    #    state: present
+    - name: ensure docker phusion/baseimage image has been built
+      docker_image:
+        name: phusion/baseimage
+        path: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/phusion_baseimage-docker/image"
+        state: present
 
     - name: clone docker marklee77/docker-baseimage-cloud repository to remote system
       git:
         repo: https://github.com/marklee77/docker-baseimage-cloud.git
         dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/marklee77_docker-baseimage-cloud"
 
-    #- name: ensure docker marklee77/baseimage-cloud image has been built
-    #  docker_image:
-    #    name: marklee77/baseimage-cloud
-    #    path: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/marklee77_docker-baseimage-cloud"
-    #    state: present
+    - name: ensure docker marklee77/baseimage-cloud image has been built
+      docker_image:
+        name: marklee77/baseimage-cloud
+        path: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/marklee77_docker-baseimage-cloud"
+        state: present
 
