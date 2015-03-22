@@ -82,10 +82,10 @@
         - "{{ ansible_env.PWD }}/.ansible_cache"
         - "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild"
 
-    #- name: copy ubuntu image to remote system
-    #  copy:
-    #    src: docker/ubuntu-14_04.tar.gz
-    #    dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/"
+    - name: copy ubuntu image to remote system
+      copy:
+        src: docker/ubuntu-14_04.tar.xz
+        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/"
 
     - name: register list of docker images
       environment:
@@ -94,11 +94,11 @@
       register: docker_image_check
       changed_when: false
 
-    #- name: load ubuntu image if necessary
-    #  environment:
-    #    http_proxy: ''
-    #  shell: gunzip -c {{ ansible_env.PWD }}/.ansible_cache/dockerbuild/ubuntu-14_04.tar.gz | docker load
-    #  when: -1 == docker_image_check.stdout.find("ubuntu")
+    - name: load ubuntu image if necessary
+      environment:
+        http_proxy: ''
+      shell: xzcat {{ ansible_env.PWD }}/.ansible_cache/dockerbuild/ubuntu-14_04.tar.xz | docker load
+      when: -1 == docker_image_check.stdout.find("ubuntu")
 
     - name: clone docker phusion/baseimage repository to remote system
       git:
