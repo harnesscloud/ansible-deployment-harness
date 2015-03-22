@@ -40,6 +40,8 @@
         owner: "{{ ansible_ssh_user }}"
 
     - name: create demo tenant
+      environment:
+        http_proxy: ''
       keystone_user:
         endpoint: "{{ openstack_identity_admin_url }}"
         token: "{{ openstack_identity_admin_token }}"
@@ -47,6 +49,8 @@
         tenant_description: "Demo Tenant"
 
     - name: create demo user
+      environment:
+        http_proxy: ''
       keystone_user:
         endpoint: "{{ openstack_identity_admin_url }}"
         token: "{{ openstack_identity_admin_token }}"
@@ -55,6 +59,8 @@
         password: "{{ openstack_identity_demo_password }}"
 
     - name: associate _member_ role with demo user
+      environment:
+        http_proxy: ''
       keystone_user:
         endpoint: "{{ openstack_identity_admin_url }}"
         token: "{{ openstack_identity_admin_token }}"
@@ -93,6 +99,8 @@
     # *should* be able to create networks, associate floating ips, etc.
 
     - name: ensure demo user has admin role
+      environment:
+        http_proxy: ''
       keystone_user:
         endpoint: "{{ openstack_identity_admin_url }}"
         token: "{{ openstack_identity_admin_token }}"
