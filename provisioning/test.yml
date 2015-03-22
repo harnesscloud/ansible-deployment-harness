@@ -88,6 +88,8 @@
       when: -1 == glance_image_check.stdout.find("marklee77/baseimage-cloud")
 
     - name: query glance for image id
+      environment:
+        http_proxy: ''
       glance_image:
         auth_url: "{{ openstack_identity_public_url }}"
         login_tenant_name: demo
