@@ -113,6 +113,7 @@
       git:
         repo: "{{ item.url }}"
         dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}"
+        update: no
       with_items:
         - { url: "https://github.com/phusion/baseimage-docker.git", dir: phusion_baseimage-docker }
         - { url: "https://github.com/sequenceiq/docker-pam.git", dir: sequenceiq_docker-pam }
