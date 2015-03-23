@@ -112,6 +112,35 @@
         insertafter: ^MAINTAINER
         state: present
 
+    - name: clone docker sequenceiq/docker-pam repository to remote system
+      git:
+        repo: https://github.com/sequenceiq/docker-pam.git
+        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/sequenceiq_docker-pam"
+
+    - name: ensure docker sequenceiq/docker-pam:ubuntu-14.04 image has been built
+      environment:
+        http_proxy: ''
+      docker_image:
+        name: sequenceiq/docker-pam
+        tag: ubuntu-14.04
+        path: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/sequenceiq_docker-pam/ubuntu-14.04"
+        state: present
+
+    - name: clone docker harnesscloud/iaas-deployment-docker-image remote system
+      git:
+        repo: https://github.com/harnesscloud/iaas-deployment-docker-image.git
+        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/harnesscloud_iaas-deployment-docker-image"
+
+    - name: ensure docker harnesscloud/iaas-deployment-docker-image image has been built
+      environment:
+        http_proxy: ''
+      docker_image:
+        name: harnesscloud/iaas-deployment-docker-image
+        path: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/harenesscloud_iaas-deployment-docker-image"
+        state: present
+
+
+
     - name: ensure that phusion/baseimage is configured to NOT use http_proxy at init...
       lineinfile:
         dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/phusion_baseimage-docker/image/Dockerfile"
@@ -139,6 +168,7 @@
         name: marklee77/baseimage-cloud
         path: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/marklee77_docker-baseimage-cloud"
         state: present
+
 
 - hosts: controller
   sudo: False
