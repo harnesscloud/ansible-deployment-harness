@@ -117,7 +117,6 @@
         - { url: "https://github.com/phusion/baseimage-docker.git", dir: phusion_baseimage-docker }
         - { url: "https://github.com/sequenceiq/docker-pam.git", dir: sequenceiq_docker-pam }
         - { url: "https://github.com/harnesscloud/iaas-deployment-docker-image.git", dir: harnesscloud_iaas-deployment-docker-image }
-        - { url: "https://github.com/harnesscloud/docker-baseimage-cloud.git", dir: harnesscloud_docker-baseimage-cloud }
         - { url: "https://github.com/harnesscloud/docker-debian-cloudimage.git", dir: harnesscloud_docker-debian-cloudimage }
         - { url: "https://github.com/harnesscloud/docker-conpaas-director.git", dir: harnesscloud_docker-conpaas-director }
         - { url: "https://github.com/harnesscloud/docker-conpaas-worker.git", dir: harnesscloud_docker-conpaas-worker }
@@ -160,7 +159,7 @@
         state: present
       with_items:
         - { name: phusion/baseimage, tag: latest, dir: phusion_baseimage-docker/image }
-        - { name: sequenceiq/docker-pam, tag: ubuntu-14.04, dir: sequenceiq_docker-pam/ubuntu-14.04 }
+        - { name: sequenceiq/pam, tag: ubuntu-14.04, dir: sequenceiq_docker-pam/ubuntu-14.04 }
         - { name: harnesscloud/iaas-deployment-docker-image, tag: latest, dir: harnesscloud_iaas-deployment-docker-image }
         - { name: harnesscloud/debian-cloudimage, tag: latest, dir: harnesscloud_docker-debian-cloudimage }
         - { name: harnesscloud/conpaas-director, tag: latest, dir: harnesscloud_docker-conpaas-director }
@@ -218,24 +217,24 @@
       register: glance_image_check
       changed_when: false
 
-    - name: import image into glance if necessary
-      environment:
-        http_proxy: ''
-      shell: docker save marklee77/baseimage-cloud | glance --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name harness --os-username harness --os-password "{{ openstack_identity_harness_password }}" image-create --name=marklee77/baseimage-cloud --is-public=true --container-format=docker --disk-format=raw
-      when: -1 == glance_image_check.stdout.find("marklee77/baseimage-cloud")
+    #- name: import image into glance if necessary
+    #  environment:
+    #    http_proxy: ''
+    #  shell: docker save marklee77/baseimage-cloud | glance --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name harness --os-username harness --os-password "{{ openstack_identity_harness_password }}" image-create --name=marklee77/baseimage-cloud --is-public=true --container-format=docker --disk-format=raw
+    #  when: -1 == glance_image_check.stdout.find("marklee77/baseimage-cloud")
 
-    - name: query glance for image id
-      environment:
-        http_proxy: ''
-      glance_image:
-        auth_url: "{{ openstack_identity_public_url }}"
-        login_tenant_name: harness
-        login_username: harness
-        login_password: "{{ openstack_identity_harness_password }}"
-        name: marklee77/baseimage-cloud
-        file: /tmp/dummy
-        state: present
-      register: harness_image
+    #- name: query glance for image id
+    #  environment:
+    #    http_proxy: ''
+    #  glance_image:
+    #    auth_url: "{{ openstack_identity_public_url }}"
+    #    login_tenant_name: harness
+    #    login_username: harness
+    #    login_password: "{{ openstack_identity_harness_password }}"
+    #    name: marklee77/baseimage-cloud
+    #    file: /tmp/dummy
+    #    state: present
+    #  register: harness_image
     
     # Ansible neutron modules lists all tenants to get ids, but this is not
     # permitted for non-admin users. Need to fix neutron_* modules as non-admin
