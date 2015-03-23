@@ -37,7 +37,7 @@
     - name: ensure that docker is configured to use http_proxy
       lineinfile:
         dest: /etc/default/docker
-        line: export http_proxy="{{ ansible_env.http_proxy }}"
+        line: export http_proxy="{{ lookup('env', 'http_proxy') }}"
         regexp: export http_proxy=
         state: present
       register: docker_http_proxy
@@ -45,7 +45,7 @@
     - name: ensure that docker is configured to use http_proxy
       lineinfile:
         dest: /etc/default/docker
-        line: export HTTP_PROXY="{{ ansible_env.http_proxy }}"
+        line: export HTTP_PROXY="{{ lookup('env', 'http_proxy') }}"
         regexp: export HTTP_PROXY=
         insertafter: export http_proxy=
         state: present
@@ -108,7 +108,7 @@
     - name: ensure that phusion/baseimage build is configured to use http_proxy
       lineinfile:
         dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/phusion_baseimage-docker/image/Dockerfile"
-        line: ENV http_proxy={{ ansible_env.http_proxy }}
+        line: ENV http_proxy={{ lookup('env', 'http_proxy') }}
         insertafter: ^MAINTAINER
         state: present
 
