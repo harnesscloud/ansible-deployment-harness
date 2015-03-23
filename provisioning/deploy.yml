@@ -124,25 +124,47 @@
 
     - name: ensure that phusion/baseimage build is configured to use http_proxy
       lineinfile:
-        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/phusion_baseimage-docker/image/Dockerfile"
+        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item }}/Dockerfile"
         line: ENV http_proxy={{ lookup('env', 'http_proxy') }}
         insertafter: ^MAINTAINER
         state: present
+      with_items:
+        - phusion_baseimage-docker/image
+        - sequenceiq_docker-pam/ubuntu-14.04
+        - harnesscloud_iaas-deployment-docker-image
+        - harnesscloud_docker-debian-cloudimage 
+        - harnesscloud_docker-conpaas-director
+        - harnesscloud_docker-conpaas-worker
 
-    - name: ensure that phusion/baseimage is configured to NOT use http_proxy at init...
+    - name: ensure that phusion/baseimage is configured to NOT use http_proxy at runtime...
       lineinfile:
-        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/phusion_baseimage-docker/image/Dockerfile"
+        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item }}/Dockerfile"
         line: ENV http_proxy=''
         insertbefore: ^CMD
         state: present
+      with_items:
+        - phusion_baseimage-docker/image
+        - sequenceiq_docker-pam/ubuntu-14.04
+        - harnesscloud_iaas-deployment-docker-image
+        - harnesscloud_docker-debian-cloudimage 
+        - harnesscloud_docker-conpaas-director
+        - harnesscloud_docker-conpaas-worker
 
-    - name: ensure docker phusion/baseimage image has been built
+    - name: ensure docker images have been built
       environment:
         http_proxy: ''
       docker_image:
-        name: phusion/baseimage
-        path: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/phusion_baseimage-docker/image"
+        name: "{{ item.name }}"
+        tag: "{{ item.tag }}"
+        path: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}"
         state: present
+      with_items:
+        - { name: phusion/baseimage, tag: latest, dir: phusion_baseimage-docker/image }
+        - { name: sequenceiq/docker-pam, tag: ubuntu-14.04, dir: sequenceiq_docker-pam/ubuntu-14.04 }
+        - { name: harnesscloud/iaas-deployment-docker-image, tag: latest, dir: harnesscloud_iaas-deployment-docker-image }
+        - { name: harnesscloud/debian-cloudimage, tag: latest, dir: harnesscloud_docker-debian-cloudimage }
+        - { name: harnesscloud/conpaas-director, tag: latest, dir: harnesscloud_docker-conpaas-director }
+        - { name: harnesscloud/conpaas-worker, tag: latest, dir: harnesscloud_docker-conpaas-worker }
 
 - hosts: controller
   sudo: False
