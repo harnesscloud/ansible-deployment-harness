@@ -82,10 +82,13 @@
         - "{{ ansible_env.PWD }}/.ansible_cache"
         - "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild"
 
-    - name: copy ubuntu image to remote system
+    - name: copy binary images to remote system
       copy:
-        src: docker/ubuntu-14_04.tar.xz
+        src: docker/{{ item }}
         dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/"
+      with_items:
+        - debian-wheezy.tar.xz
+        - ubuntu-14_04.tar.xz
 
     - name: register list of docker images
       environment:
@@ -94,16 +97,30 @@
       register: docker_image_check
       changed_when: false
 
+    - name: load debian image if necessary
+      environment:
+        http_proxy: ''
+      shell: xzcat {{ ansible_env.PWD }}/.ansible_cache/dockerbuild/debian-wheezy.tar.xz | docker load
+      when: -1 == docker_image_check.stdout.find("debian")
+
     - name: load ubuntu image if necessary
       environment:
         http_proxy: ''
       shell: xzcat {{ ansible_env.PWD }}/.ansible_cache/dockerbuild/ubuntu-14_04.tar.xz | docker load
       when: -1 == docker_image_check.stdout.find("ubuntu")
 
-    - name: clone docker phusion/baseimage repository to remote system
+    - name: clone docker image repositories to remote systems
       git:
-        repo: https://github.com/phusion/baseimage-docker.git
-        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/phusion_baseimage-docker"
+        repo: "{{ item.url }}"
+        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}"
+      with_items:
+        - { url: "https://github.com/phusion/baseimage-docker.git", dir: phusion_baseimage-docker }
+        - { url: "https://github.com/sequenceiq/docker-pam.git", dir: sequenceiq_docker-pam }
+        - { url: "https://github.com/harnesscloud/iaas-deployment-docker-image.git", dir: harnesscloud_iaas-deployment-docker-image }
+        - { url: "https://github.com/harnesscloud/docker-baseimage-cloud.git", dir: harnesscloud_docker-baseimage-cloud }
+        - { url: "https://github.com/harnesscloud/docker-debian-cloudimage.git", dir: harnesscloud_docker-debian-cloudimage }
+        - { url: "https://github.com/harnesscloud/docker-conpaas-director.git", dir: harnesscloud_docker-conpaas-director }
+        - { url: "https://github.com/harnesscloud/docker-conpaas-worker.git", dir: harnesscloud_docker-conpaas-worker }
 
     - name: ensure that phusion/baseimage build is configured to use http_proxy
       lineinfile:
@@ -111,35 +128,6 @@
         line: ENV http_proxy={{ lookup('env', 'http_proxy') }}
         insertafter: ^MAINTAINER
         state: present
-
-    - name: clone docker sequenceiq/docker-pam repository to remote system
-      git:
-        repo: https://github.com/sequenceiq/docker-pam.git
-        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/sequenceiq_docker-pam"
-
-    - name: ensure docker sequenceiq/docker-pam:ubuntu-14.04 image has been built
-      environment:
-        http_proxy: ''
-      docker_image:
-        name: sequenceiq/docker-pam
-        tag: ubuntu-14.04
-        path: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/sequenceiq_docker-pam/ubuntu-14.04"
-        state: present
-
-    - name: clone docker harnesscloud/iaas-deployment-docker-image remote system
-      git:
-        repo: https://github.com/harnesscloud/iaas-deployment-docker-image.git
-        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/harnesscloud_iaas-deployment-docker-image"
-
-    - name: ensure docker harnesscloud/iaas-deployment-docker-image image has been built
-      environment:
-        http_proxy: ''
-      docker_image:
-        name: harnesscloud/iaas-deployment-docker-image
-        path: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/harenesscloud_iaas-deployment-docker-image"
-        state: present
-
-
 
     - name: ensure that phusion/baseimage is configured to NOT use http_proxy at init...
       lineinfile:
@@ -155,20 +143,6 @@
         name: phusion/baseimage
         path: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/phusion_baseimage-docker/image"
         state: present
-
-    - name: clone docker marklee77/docker-baseimage-cloud repository to remote system
-      git:
-        repo: https://github.com/marklee77/docker-baseimage-cloud.git
-        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/marklee77_docker-baseimage-cloud"
-
-    - name: ensure docker marklee77/baseimage-cloud image has been built
-      environment:
-        http_proxy: ''
-      docker_image:
-        name: marklee77/baseimage-cloud
-        path: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/marklee77_docker-baseimage-cloud"
-        state: present
-
 
 - hosts: controller
   sudo: False
