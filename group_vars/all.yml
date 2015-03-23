@@ -7,6 +7,8 @@ openstack_identity_admin_token: >
                          length=20
                          chars=ascii_letters,digits') }}
 
+openstack_identity_harness_password: password
+
 mysql_bind_address: "0.0.0.0"
 
 openstack_controller_ip: "{{ hostvars[groups.controller[0]].ansible_all_ipv4_addresses[0] }}"
