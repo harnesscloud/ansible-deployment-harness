@@ -371,11 +371,14 @@
 
     - name: ensure that harness iaas stervice is started
       docker:
+        name: harness-iaas-services
+        image: harnesscloud/iaas-deployment-docker-image
+        net: host
         env:
           PASSWORD: "{{ openstack_identity_harness_password }}"
           NOVA_ENDPOINT: "{{ openstack_compute_endpoint_host }}:5000"
           IRM_INTERFACE: "{{ openstack_network_external_device }}"
-          DEFAULT_IMAGE: "{{ glance_image_check.id }}"
+          DEFAULT_IMAGE: "{{ harness_image.id }}"
         expose:
           - 8888:8888
           - 56789:56789
