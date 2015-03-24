@@ -86,6 +86,7 @@
       copy:
         src: docker/{{ item }}
         dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/"
+        owner: "{{ ansible_ssh_user }}"
       with_items:
         - debian-wheezy.tar.xz
         - ubuntu-14_04.tar.xz
@@ -110,6 +111,7 @@
       when: -1 == docker_image_check.stdout.find("ubuntu")
 
     - name: clone docker image repositories to remote systems
+      sudo_user: "{{ ansible_ssh_user }}"
       git:
         repo: "{{ item.url }}"
         dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}"
@@ -122,7 +124,7 @@
         - { url: "https://github.com/harnesscloud/docker-conpaas-director.git", dir: harnesscloud_docker-conpaas-director }
         - { url: "https://github.com/harnesscloud/docker-conpaas-worker.git", dir: harnesscloud_docker-conpaas-worker }
 
-    - name: ensure that phusion/baseimage build is configured to use http_proxy
+    - name: ensure that docker image builds are configured to use http_proxy
       lineinfile:
         dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item }}/Dockerfile"
         line: ENV http_proxy={{ lookup('env', 'http_proxy') }}
@@ -136,7 +138,7 @@
         - harnesscloud_docker-conpaas-director
         - harnesscloud_docker-conpaas-worker
 
-    - name: ensure that phusion/baseimage is configured to NOT use http_proxy at runtime...
+    - name: ensure that docker images are configured to NOT use http_proxy at runtime...
       lineinfile:
         dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item }}/Dockerfile"
         line: ENV http_proxy=''
@@ -211,31 +213,31 @@
         dest: "{{ ansible_env.PWD }}/harness.openrc"
         mode: 0600
 
-    - name: check to see if image has been registered with glance
+    - name: check to see what images have been registered with glance
       environment:
         http_proxy: ''
       command: glance --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name harness --os-username harness --os-password "{{ openstack_identity_harness_password }}" image-list
       register: glance_image_check
       changed_when: false
 
-    #- name: import image into glance if necessary
-    #  environment:
-    #    http_proxy: ''
-    #  shell: docker save marklee77/baseimage-cloud | glance --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name harness --os-username harness --os-password "{{ openstack_identity_harness_password }}" image-create --name=marklee77/baseimage-cloud --is-public=true --container-format=docker --disk-format=raw
-    #  when: -1 == glance_image_check.stdout.find("marklee77/baseimage-cloud")
+    - name: import conpaas-worker image into glance if necessary
+      environment:
+        http_proxy: ''
+      shell: docker save harnesscloud/conpaas-worker | glance --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name harness --os-username harness --os-password "{{ openstack_identity_harness_password }}" image-create --name=harnesscloud/conpaas-worker --is-public=true --container-format=docker --disk-format=raw
+      when: -1 == glance_image_check.stdout.find("harnesscloud/conpaas-worker")
 
-    #- name: query glance for image id
-    #  environment:
-    #    http_proxy: ''
-    #  glance_image:
-    #    auth_url: "{{ openstack_identity_public_url }}"
-    #    login_tenant_name: harness
-    #    login_username: harness
-    #    login_password: "{{ openstack_identity_harness_password }}"
-    #    name: marklee77/baseimage-cloud
-    #    file: /tmp/dummy
-    #    state: present
-    #  register: harness_image
+    - name: query glance for image id
+      environment:
+        http_proxy: ''
+      glance_image:
+        auth_url: "{{ openstack_identity_public_url }}"
+        login_tenant_name: harness
+        login_username: harness
+        login_password: "{{ openstack_identity_harness_password }}"
+        name: harnesscloud/conpaas-worker
+        file: /tmp/dummy
+        state: present
+      register: harness_image
     
     # Ansible neutron modules lists all tenants to get ids, but this is not
     # permitted for non-admin users. Need to fix neutron_* modules as non-admin
@@ -341,7 +343,7 @@
 
     # the neutron_sec_group module needs work...
     
-    - name: verity existence of harness security group
+    - name: verify existence of harness security group
       environment:
         http_proxy: ''
       command: neutron --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name harness --os-username harness --os-password "{{ openstack_identity_harness_password }}" security-group-show harness-secgroup
@@ -366,48 +368,3 @@
         http_proxy: ''
       command: neutron --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name harness --os-username harness --os-password "{{ openstack_identity_harness_password }}" security-group-rule-create --direction=ingress --protocol=tcp --port-range-min=22 --port-range-max=22 harness-secgroup
       when: verify_secgroup|failed
-
-    #- name: create a new virtual machine instance
-    #  environment:
-    #    http_proxy: ''
-    #  nova_compute:
-    #    auth_url: "{{ openstack_identity_public_url }}"
-    #    login_tenant_name: harness
-    #    login_username: harness
-    #    login_password: "{{ openstack_identity_harness_password }}"
-    #    name: harness-instance
-    #    flavor_id: 1
-    #    image_id: "{{ harness_image.id }}"
-    #    nics:
-    #      - net-id: "{{ openstack_network_internal.id }}"
-    #    key_name: harness-keypair
-    #    security_groups: harness-secgroup
-    #    wait: "yes"
-    #    state: present
-
-    #- name: ensure floating ip is associated with vm instance
-    #  environment:
-    #    http_proxy: ''
-    #  neutron_floating_ip:
-    #    auth_url: "{{ openstack_identity_public_url }}"
-    #    login_tenant_name: harness
-    #    login_username: harness
-    #    login_password: "{{ openstack_identity_harness_password }}"
-    #    instance_name: harness-instance
-    #    network_name: public
-    #    state: present
-    #  register: harness_floating_ip
-
-    #- name: wait for ssh to become available
-    #  wait_for:
-    #    host: "{{ harness_floating_ip.public_ip }}"
-    #    port: 22
-
-    #- name: ping harness virtual machine
-    #  command: ping -c 4 {{ harness_floating_ip.public_ip }}
-    #  changed_when: false
-
-    #- name: verify that virtual machine can be logged into via ssh
-    #  command: ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@{{ harness_floating_ip.public_ip }} hostname
-    #  changed_when: false
-
