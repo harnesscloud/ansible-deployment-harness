@@ -124,6 +124,20 @@
         - { url: "https://github.com/harnesscloud/docker-conpaas-director.git", dir: harnesscloud_docker-conpaas-director }
         - { url: "https://github.com/harnesscloud/docker-conpaas-worker.git", dir: harnesscloud_docker-conpaas-worker }
 
+    - name: ensure that docker image builds are configured to use https_proxy
+      lineinfile:
+        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item }}/Dockerfile"
+        line: ENV https_proxy={{ lookup('env', 'https_proxy') }}
+        insertafter: ^MAINTAINER
+        state: present
+      with_items:
+        - phusion_baseimage-docker/image
+        - sequenceiq_docker-pam/ubuntu-14.04
+        - harnesscloud_iaas-deployment-docker-image
+        - harnesscloud_docker-debian-cloudimage 
+        - harnesscloud_docker-conpaas-director
+        - harnesscloud_docker-conpaas-worker
+
     - name: ensure that docker image builds are configured to use http_proxy
       lineinfile:
         dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item }}/Dockerfile"
@@ -142,6 +156,20 @@
       lineinfile:
         dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item }}/Dockerfile"
         line: ENV http_proxy=''
+        insertbefore: ^CMD
+        state: present
+      with_items:
+        - phusion_baseimage-docker/image
+        - sequenceiq_docker-pam/ubuntu-14.04
+        - harnesscloud_iaas-deployment-docker-image
+        - harnesscloud_docker-debian-cloudimage 
+        - harnesscloud_docker-conpaas-director
+        - harnesscloud_docker-conpaas-worker
+
+    - name: ensure that docker images are configured to NOT use https_proxy at runtime...
+      lineinfile:
+        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item }}/Dockerfile"
+        line: ENV https_proxy=''
         insertbefore: ^CMD
         state: present
       with_items:
