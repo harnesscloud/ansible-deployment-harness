@@ -205,6 +205,7 @@
         src: templates/admin.openrc
         dest: "{{ ansible_env.PWD }}/admin.openrc"
         owner: "{{ ansible_ssh_user }}"
+        mode: 0600
 
     - name: create harness tenant
       environment:
@@ -239,6 +240,7 @@
       template:
         src: templates/harness.openrc
         dest: "{{ ansible_env.PWD }}/harness.openrc"
+        owner: "{{ ansible_ssh_user }}"
         mode: 0600
 
     - name: check to see what images have been registered with glance
@@ -401,17 +403,35 @@
   sudo: True
   tasks:
 
-    - name: ensure that harness iaas service is started
-      docker:
-        name: harness-iaas-services
-        image: harnesscloud/iaas-deployment-docker-image
-        net: host
-        env:
-          PASSWORD: "{{ openstack_identity_harness_password }}"
-          NOVA_ENDPOINT: "{{ openstack_compute_endpoint_host }}:5000"
-          IRM_INTERFACE: "{{ openstack_network_external_device }}"
-          DEFAULT_IMAGE: "{{ harness_image.id }}"
-        expose:
-          - 8888:8888
-          - 56789:56789
+    - name: ensure harness iaas configuration directory exists
+      file:
+        path: /etc/harness-iaas
+        owner: root
+        group: root
+        mode: 0700
+        state: directory
+
+    - name: update harness-iaas configuration files from templates
+      template:
+        src: templates/etc/harness-iaas/{{ item }}
+        dest: /etc/harness-iaas/{{ item }}
+        owner: root
+        group: root
+        mode: 0600
+      with_items:
+        - compute_list
+
+    #- name: ensure that harness iaas service is started
+    #  docker:
+    #    name: harness-iaas-services
+    #    image: harnesscloud/iaas-deployment-docker-image
+    #    net: host
+    #    env:
+    #      PASSWORD: "{{ openstack_identity_harness_password }}"
+    #      NOVA_ENDPOINT: "{{ openstack_compute_endpoint_host }}:5000"
+    #      IRM_INTERFACE: "{{ openstack_network_external_device }}"
+    #      DEFAULT_IMAGE: "{{ harness_image.id }}"
+    #    expose:
+    #      - 8888:8888
+    #      - 56789:56789
         
