@@ -11,7 +11,7 @@
         "Memory": 2,
         "Disk": 12
       }
-    },
+    }{% if not loop.last %},{% endif %}
     {%- endfor %}
   ]
 }
