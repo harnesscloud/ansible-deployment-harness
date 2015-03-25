@@ -1,7 +1,3 @@
-{% for node in groups.compute %}
-    {{ node }}
-{% endfor %}
-
 {
   "Machine": [
     {% for node in groups.compute -%}
@@ -9,13 +5,13 @@
       "host_name" : "{{ node }}",
       "location" : "/DataCenter1/Rack1/",
       "frequency" : {{ hostvars[node].ohai_cpu['0'].mhz }},
-      "IP" : "{{ hostvars[node].ansible_default_ipv4.address }},
+      "IP" : "{{ hostvars[node].ansible_default_ipv4.address }}",
       "Cost": { 
         "Cores": 10,
         "Memory": 2,
         "Disk": 12
       }
     },
-    {% endfor %}
+    {%- endfor %}
   ]
 }
