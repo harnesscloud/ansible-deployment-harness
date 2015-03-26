@@ -432,7 +432,7 @@
           IRM_INTERFACE: "{{ openstack_network_external_device }}"
           DEFAULT_IMAGE: "{{ harness_image.id }}"
         volumes: /etc/harness-iaas:/etc/harness-iaas:ro
-        expose:
+        ports:
           - 8888:8888
           - 56789:56789
         
