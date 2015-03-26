@@ -1,20 +1,18 @@
 {
    "Hosts": {
-      "maia01": "146.169.2.51",
-      "axel07": "146.169.2.15"
+      {% for node in groups.compute -%}
+      "{{ node }}" : "hostvars[node].ansible_default_ipv4.address"{% if not loop.last %},{% endif %}
+      {%- endfor %}
    },   
    "Zones": [
       {
          "Name": "Commodity",
-         "Hosts": ["axel07", "maia01"],
+         "Hosts": [
+         {% for node in groups.compute -%}
+         "{{ node }}"{% if not loop.last %},{% endif %}
+         {%- endfor %}
+         ],
          "Types": ["Machine", "Storage"]
-      
-      },
-      {
-         "Name": "Specialised",
-         "Hosts": ["maia01"],
-         "Types": ["Machine", "DFECluster", "Storage"]
       }
    ]
 }
-
