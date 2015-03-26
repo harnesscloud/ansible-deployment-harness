@@ -426,7 +426,6 @@
       docker:
         name: harness-iaas-services
         image: harnesscloud/iaas-deployment-docker-image
-        net: host
         env:
           PASSWORD: "{{ openstack_identity_harness_password }}"
           NOVA_ENDPOINT: "{{ openstack_compute_endpoint_host }}:5000"
