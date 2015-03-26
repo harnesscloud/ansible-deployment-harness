@@ -420,6 +420,7 @@
         mode: 0600
       with_items:
         - compute_list
+        - crs.constraints
 
     - name: ensure that harness iaas service is started
       docker:
