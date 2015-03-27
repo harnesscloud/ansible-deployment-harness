@@ -8,7 +8,7 @@
       delegate_to: localhost
       connection: local
       git:
-        repo: https://github.com/openstack-ansible/ansible-role-{{ item }}.git
+        repo: "{{ openstack_repository_prefix }}ansible-role-{{ item }}.git"
         dest: roles/{{ item }}
         update: yes
       with_items:
