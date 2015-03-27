@@ -17,15 +17,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   config.vm.provision "ansible" do |ansible|
-    ansible.playbook = "provisioning/prep.yml"
-  end
-
-  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "provisioning/deploy.yml"
+    ansible.groups = {
+      "controller" => ["default"],
+      "network" => ["default"],
+      "compute" => ["default"]
+    }
     ansible.extra_vars = {
       openstack_network_external_device: "eth1",
       openstack_network_external_gateway: "10.1.0.2"
     }
-    ansible.playbook = "provisioning/deploy.yml"
   end
 
   #config.vm.provision "ansible" do |ansible|
