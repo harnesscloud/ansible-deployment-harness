@@ -8,6 +8,8 @@ openstack_identity_admin_token: >
 
 openstack_identity_harness_password: password
 
+openstack_identity_region: RegionOne
+
 mysql_bind_address: "0.0.0.0"
 
 openstack_identity_admin_url: >

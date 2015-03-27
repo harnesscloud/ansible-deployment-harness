@@ -6,6 +6,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.box = "ubuntu/trusty64"
   config.vm.network :private_network, ip: "10.1.0.2", :netmask => "255.255.0.0"
+  config.vm.network :forwarded_port, guest: 56789, host: 56789
 
   config.vm.provider :virtualbox do |v|
     v.memory = 2048
