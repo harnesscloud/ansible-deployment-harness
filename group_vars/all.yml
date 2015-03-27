@@ -1,6 +1,7 @@
 ---
 openstack_repository_prefix: "https://github.com/openstack-ansible/"
-openstack_controller_ip: "{{ hostvars[groups.controller[0]].ansible_all_ipv4_addresses[0] }}"
+
+openstack_controller_ip: "{{ hostvars[groups.controller[0]].ansible_default_ipv4.address }}"
 
 openstack_rabbitmq_host: "{{ openstack_controller_ip }}"
 openstack_mysql_host: "{{ openstack_controller_ip }}"
