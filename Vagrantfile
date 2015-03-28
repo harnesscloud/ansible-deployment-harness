@@ -21,6 +21,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.provision "ansible" do |ansible|
     ansible.playbook = "provisioning/prep.yml"
+    ansible.groups = {
+      "controller" => ["default"],
+      "network" => ["default"],
+      "compute" => ["default"]
+    }
   end
 
   config.vm.provision "ansible" do |ansible|
