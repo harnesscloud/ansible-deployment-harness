@@ -1,0 +1,22 @@
+# FIXME: add package to make this stick...
+
+- hosts: network
+    sudo: True
+    tasks:
+
+      - name: enable net.ipv4.ip_forward in sysctl
+        sysctl:
+          name: net.ipv4.ip_forward
+          value: "1"
+          state: present
+
+      - name: check to see if masquerade rule is present...
+        command: iptables -t nat -C POSTROUTING -s 10.1.0.0/16 -j MASQUERADE
+        register: ipt_masquerade
+        ignore_errors: yes
+        changed_when: false
+
+      - name: add if masquerade rule is not present...
+        command: iptables -t nat -A POSTROUTING -s 10.1.0.0/16 -j MASQUERADE
+        when: ipt_masquerade|failed
+
