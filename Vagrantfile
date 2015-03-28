@@ -11,12 +11,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network :forwarded_port, guest: 56789, host: 56789
 
   config.vm.provider :virtualbox do |v|
-    v.memory = 2048
+    v.memory = 4096
     v.customize ["modifyvm", :id, "--nicpromisc2", "allow-vms"]
   end
 
   config.vm.provision "ansible" do |ansible|
     ansible.playbook = "provisioning/getreqs.yml"
+  end
+
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "provisioning/prep.yml"
   end
 
   config.vm.provision "ansible" do |ansible|
