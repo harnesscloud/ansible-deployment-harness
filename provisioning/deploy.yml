@@ -466,7 +466,7 @@
         security_groups: harness-secgroup
         wait: "yes"
         state: present
-        user_data: >
+        user_data: |
           export USERNAME=test
           export PASSWORD=password
           export CRS_URL=http://{{ ansible_default_ipv4.address }}:56789
