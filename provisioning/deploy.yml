@@ -483,10 +483,10 @@
         state: present
       register: harness_floating_ip
 
-    - name: wait for ssh to become available
-      wait_for:
-        host: "{{ harness_floating_ip.public_ip }}"
-        port: 22
+    #- name: wait for ssh to become available
+    #  wait_for:
+    #    host: "{{ harness_floating_ip.public_ip }}"
+    #    port: 22
 
     - name: ping harness virtual machine
       command: ping -c 4 {{ harness_floating_ip.public_ip }}
@@ -497,12 +497,12 @@
     #  changed_when: false
  
     - name: check to see if dnat rule is present
-        command: iptables -t nat -C PREROUTING -p tcp --dport 443 -j DNAT --to {{ harness_floating_ip.public_ip }}
-        register: ipt_dnat
-        ignore_errors: yes
-        changed_when: false
+      command: iptables -t nat -C PREROUTING -p tcp --dport 443 -j DNAT --to {{ harness_floating_ip.public_ip }}
+      register: ipt_dnat
+      ignore_errors: yes
+      changed_when: false
 
-     - name: add masquerade rule if not present
-         command: iptables -t nat -A PREROUTING -p tcp --dport 443 -j DNAT --to {{ harness_floating_ip.public_ip }}
-         when: ipt_dnat|failed
+    - name: add masquerade rule if not present
+      command: iptables -t nat -A PREROUTING -p tcp --dport 443 -j DNAT --to {{ harness_floating_ip.public_ip }}
+      when: ipt_dnat|failed
 
