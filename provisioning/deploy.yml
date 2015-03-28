@@ -196,6 +196,39 @@
         - { name: harnesscloud/conpaas-director, tag: latest, dir: harnesscloud_docker-conpaas-director }
         - { name: harnesscloud/conpaas-worker, tag: latest, dir: harnesscloud_docker-conpaas-worker }
 
+    - name: ensure harness iaas configuration directory exists
+      file:
+        path: /etc/harness-iaas
+        owner: root
+        group: root
+        mode: 0700
+        state: directory
+
+    - name: update harness-iaas configuration files from templates
+      template:
+        src: templates/etc/harness-iaas/{{ item }}
+        dest: /etc/harness-iaas/{{ item }}
+        owner: root
+        group: root
+        mode: 0600
+      with_items:
+        - compute_list
+        - crs.constraints
+
+    - name: ensure that harness iaas service is started
+      docker:
+        name: harness-iaas-services
+        image: harnesscloud/iaas-deployment-docker-image
+        env:
+          PASSWORD: "{{ openstack_identity_harness_password }}"
+          NOVA_ENDPOINT: "{{ openstack_compute_endpoint_host }}:5000"
+          IRM_INTERFACE: "{{ openstack_network_external_device }}"
+          DEFAULT_IMAGE: "{{ conpaas_worker_image.id }}"
+        volumes: /etc/harness-iaas:/etc/harness-iaas:ro
+        ports:
+          - 8888:8888
+          - 56789:56789
+
 - hosts: controller
   sudo: False
   tasks:
@@ -250,13 +283,32 @@
       register: glance_image_check
       changed_when: false
 
-    - name: import conpaas-worker image into glance if necessary
+    - name: import harnesscloud/conpaas-director image into glance if necessary
+      environment:
+        http_proxy: ''
+      shell: docker save harnesscloud/conpaas-director | glance --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name harness --os-username harness --os-password "{{ openstack_identity_harness_password }}" image-create --name=harnesscloud/conpaas-director --is-public=true --container-format=docker --disk-format=raw
+      when: -1 == glance_image_check.stdout.find("harnesscloud/conpaas-director")
+
+    - name: query glance for harnesscloud/conpaas-director image id
+      environment:
+        http_proxy: ''
+      glance_image:
+        auth_url: "{{ openstack_identity_public_url }}"
+        login_tenant_name: harness
+        login_username: harness
+        login_password: "{{ openstack_identity_harness_password }}"
+        name: harnesscloud/conpaas-director
+        file: /tmp/dummy
+        state: present
+      register: conpaas_director_image
+ 
+    - name: import harnesscloud/conpaas-worker image into glance if necessary
       environment:
         http_proxy: ''
       shell: docker save harnesscloud/conpaas-worker | glance --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name harness --os-username harness --os-password "{{ openstack_identity_harness_password }}" image-create --name=harnesscloud/conpaas-worker --is-public=true --container-format=docker --disk-format=raw
       when: -1 == glance_image_check.stdout.find("harnesscloud/conpaas-worker")
 
-    - name: query glance for image id
+    - name: query glance for harnesscloud/conpaas-worker image id
       environment:
         http_proxy: ''
       glance_image:
@@ -267,7 +319,7 @@
         name: harnesscloud/conpaas-worker
         file: /tmp/dummy
         state: present
-      register: harness_image
+      register: conpaas_worker_image
     
     # Ansible neutron modules lists all tenants to get ids, but this is not
     # permitted for non-admin users. Need to fix neutron_* modules as non-admin
@@ -399,40 +451,43 @@
       command: neutron --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name harness --os-username harness --os-password "{{ openstack_identity_harness_password }}" security-group-rule-create --direction=ingress --protocol=tcp --port-range-min=22 --port-range-max=22 harness-secgroup
       when: verify_secgroup|failed
 
-- hosts: controller
-  sudo: True
-  tasks:
+    - name: create a new virtual machine instance
+      nova_compute:
+        auth_url: "{{ openstack_identity_public_url }}"
+        login_tenant_name: harness
+        login_username: harness
+        login_password: "{{ openstack_identity_harness_password }}"
+        name: conpaas-director
+        flavor_id: 1
+        image_id: "{{ conpaas_director_image.id }}"
+        nics:
+          - net-id: "{{ openstack_network_internal.id }}"
+        key_name: harness-keypair
+        security_groups: harness-secgroup
+        wait: "yes"
+        state: present
 
-    - name: ensure harness iaas configuration directory exists
-      file:
-        path: /etc/harness-iaas
-        owner: root
-        group: root
-        mode: 0700
-        state: directory
+    - name: ensure floating ip is associated with vm instance
+      neutron_floating_ip:
+        auth_url: "{{ openstack_identity_public_url }}"
+        login_tenant_name: harness
+        login_username: harness
+        login_password: "{{ openstack_identity_harness_password }}"
+        instance_name: conpaas-director
+        network_name: public
+        state: present
+      register: harness_floating_ip
 
-    - name: update harness-iaas configuration files from templates
-      template:
-        src: templates/etc/harness-iaas/{{ item }}
-        dest: /etc/harness-iaas/{{ item }}
-        owner: root
-        group: root
-        mode: 0600
-      with_items:
-        - compute_list
-        - crs.constraints
+    - name: wait for ssh to become available
+      wait_for:
+        host: "{{ harness_floating_ip.public_ip }}"
+        port: 22
 
-    - name: ensure that harness iaas service is started
-      docker:
-        name: harness-iaas-services
-        image: harnesscloud/iaas-deployment-docker-image
-        env:
-          PASSWORD: "{{ openstack_identity_harness_password }}"
-          NOVA_ENDPOINT: "{{ openstack_compute_endpoint_host }}:5000"
-          IRM_INTERFACE: "{{ openstack_network_external_device }}"
-          DEFAULT_IMAGE: "{{ harness_image.id }}"
-        volumes: /etc/harness-iaas:/etc/harness-iaas:ro
-        ports:
-          - 8888:8888
-          - 56789:56789
-        
+    - name: ping harness virtual machine
+      command: ping -c 4 {{ harness_floating_ip.public_ip }}
+      changed_when: false
+
+    - name: verify that virtual machine can be logged into via ssh
+      command: ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no cirros@{{ harness_floating_ip.public_ip }} hostname
+      changed_when: false
+ 
