@@ -1,2 +1,3 @@
 ---
 openstack_network_external_device: "{{ ([ansible_eth0, ansible_eth1, ansible_eth2, ansible_eth3, ansible_eth4]|selectattr('active')|first).device }}"
+openstack_network_external_network: 10.1.0.0/16
