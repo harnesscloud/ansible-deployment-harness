@@ -36,8 +36,4 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     }
   end
 
-  #config.vm.provision "ansible" do |ansible|
-  #  ansible.playbook = "provisioning/test.yml"
-  #end
-
 end
