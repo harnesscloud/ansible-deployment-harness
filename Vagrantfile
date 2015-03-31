@@ -27,6 +27,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       "network" => ["default"],
       "compute" => ["default"]
     }
+    ansible.extra_vars = {
+      openstack_network_external_device: "eth1"
+    }
   end
 
   config.vm.provision "ansible" do |ansible|
