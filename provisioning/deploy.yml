@@ -203,7 +203,7 @@
         - { name: harnesscloud/conpaas-director, tag: latest, dir: harnesscloud_docker-conpaas-director }
         - { name: harnesscloud/conpaas-worker, tag: latest, dir: harnesscloud_docker-conpaas-worker }
 
-- hosts: none
+- hosts: controller
   sudo: True
   tasks:
 
