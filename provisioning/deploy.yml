@@ -511,6 +511,7 @@
         port: 22
 
     - name: verify that virtual machine can be logged into via ssh
+      sudo_user: "{{ ansible_ssh_user }}"
       command: ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@{{ harness_floating_ip.public_ip }} hostname
       changed_when: false
  
