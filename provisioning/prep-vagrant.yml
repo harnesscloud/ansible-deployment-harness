@@ -2,6 +2,15 @@
   sudo: True
   tasks:
 
+    - name: ensure required packages for prep are installed
+      apt:
+        pkg: "{{ item }}"
+        state: latest
+        update_cache: yes
+        cache_valid_time: 600
+      with_items:
+        - iptables-persistent
+
     - name: enable net.ipv4.ip_forward in sysctl
       sysctl:
         name: net.ipv4.ip_forward
@@ -15,5 +24,7 @@
       changed_when: false
 
     - name: add masquerade rule if not present
-      command: iptables -t nat -A POSTROUTING -s {{ openstack_network_external_network }} -o eth0 -j MASQUERADE
+      shell: >
+        iptables -t nat -A POSTROUTING -s 10.1.0.0/16 -o eth0 -j MASQUERADE &&
+        invoke-rc.d iptables-persistent save
       when: ipt_masquerade|failed
