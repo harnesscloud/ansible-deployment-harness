@@ -375,6 +375,7 @@
         state: present
 
     - name: create ssh keypair
+      sudo_user: "{{ ansible_ssh_user }}"
       command: ssh-keygen -q -f {{ ansible_env.PWD }}/.ssh/id_rsa -P ""
                creates={{ ansible_env.PWD }}/.ssh/id_rsa
 
@@ -475,7 +476,7 @@
         login_username: harness
         login_password: "{{ openstack_identity_harness_password }}"
         name: conpaas-director
-        flavor_id: 1
+        flavor_id: 2
         image_id: "{{ conpaas_director_image.id }}"
         nics:
           - net-id: "{{ openstack_network_internal.id }}"
