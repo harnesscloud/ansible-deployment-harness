@@ -511,7 +511,7 @@
         port: 22
 
     - name: verify that virtual machine can be logged into via ssh
-      command: ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no cirros@{{ harness_floating_ip.public_ip }} hostname
+      command: ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@{{ harness_floating_ip.public_ip }} hostname
       changed_when: false
  
     - name: check to see if dnat rule is present
