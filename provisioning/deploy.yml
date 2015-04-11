@@ -463,6 +463,7 @@
           main_PASSWORD: "{{ openstack_identity_harness_password }}"
           main_NOVA_ENDPOINT: "{{ openstack_compute_endpoint_host }}:5000"
           CRS_DEFAULT_IMAGE: "{{ conpaas_worker_image.id }}"
+          network_UUID: "{{ openstack_network_internal.id }}"
         volumes: /etc/harness-iaas:/etc/harness-iaas:ro
         ports:
           - 8888:8888
@@ -487,7 +488,7 @@
           export USERNAME=test
           export PASSWORD=password
           export CRS_URL=http://{{ ansible_default_ipv4.address }}:56789
-          export IMAGE_ID=conpaas-worker
+          export IMAGE_ID=harnesscloud/conpaas-worker
 
     - name: ensure floating ip is associated with vm instance
       neutron_floating_ip:
