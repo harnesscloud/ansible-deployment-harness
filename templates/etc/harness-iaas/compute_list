@@ -2,7 +2,7 @@
   "Machine": [
     {% for node in groups.compute -%}
     {
-      "host_name" : "{{ node }}",
+      "host_name" : "{{ hostvars[node].ansible_hostname }}",
       "location" : "/DataCenter1/Rack1/",
       "frequency" : {{ hostvars[node].ohai_cpu['0'].mhz }},
       "IP" : "{{ hostvars[node].ansible_all_ipv4_addresses[0] }}",
