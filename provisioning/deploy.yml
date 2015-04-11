@@ -460,10 +460,9 @@
         name: harness-iaas-services
         image: harnesscloud/iaas-deployment-docker-image
         env:
-          PASSWORD: "{{ openstack_identity_harness_password }}"
-          NOVA_ENDPOINT: "{{ openstack_compute_endpoint_host }}:5000"
-          IRM_INTERFACE: "{{ openstack_network_external_device }}"
-          DEFAULT_IMAGE: "{{ conpaas_worker_image.id }}"
+          main_PASSWORD: "{{ openstack_identity_harness_password }}"
+          main_NOVA_ENDPOINT: "{{ openstack_compute_endpoint_host }}:5000"
+          CRS_DEFAULT_IMAGE: "{{ conpaas_worker_image.id }}"
         volumes: /etc/harness-iaas:/etc/harness-iaas:ro
         ports:
           - 8888:8888
