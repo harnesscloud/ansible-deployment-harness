@@ -487,6 +487,7 @@
         user_data: |
           export USERNAME=test
           export PASSWORD=password
+          export IP_PREFIX=192.168.13.
           export CRS_URL=http://{{ ansible_default_ipv4.address }}:56789
           export IMAGE_ID=harnesscloud/conpaas-worker
 
