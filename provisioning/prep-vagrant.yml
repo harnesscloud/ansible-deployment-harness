@@ -18,7 +18,7 @@
         state: present
 
     - name: check to see if masquerade rule is present
-      command: iptables -t nat -C POSTROUTING -s {{ openstack_network_external_network }} -o eth0 -j MASQUERADE
+      command: iptables -t nat -C POSTROUTING -s 10.1.0.0/16 -o eth0 -j MASQUERADE
       register: ipt_masquerade
       ignore_errors: yes
       changed_when: false
