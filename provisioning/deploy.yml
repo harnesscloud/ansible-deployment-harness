@@ -88,7 +88,6 @@
         dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/"
         owner: "{{ ansible_ssh_user }}"
       with_items:
-        - debian-wheezy.tar.xz
         - ubuntu-14_04.tar.xz
 
     - name: register list of docker images
@@ -97,12 +96,6 @@
       command: docker images
       register: docker_image_check
       changed_when: false
-
-    - name: load debian image if necessary
-      environment:
-        http_proxy: ''
-      shell: xzcat {{ ansible_env.PWD }}/.ansible_cache/dockerbuild/debian-wheezy.tar.xz | docker load
-      when: -1 == docker_image_check.stdout.find("debian")
 
     - name: load ubuntu image if necessary
       environment:
@@ -126,8 +119,6 @@
             version: HEAD, dir: sequenceiq_docker-pam }
         - { url: "https://github.com/harnesscloud/iaas-deployment-docker-image.git", 
             version: HEAD, dir: harnesscloud_iaas-deployment-docker-image }
-        - { url: "https://github.com/harnesscloud/docker-debian-cloudimage.git", 
-            version: HEAD, dir: harnesscloud_docker-debian-cloudimage }
         - { url: "https://github.com/harnesscloud/docker-conpaas-director.git", 
             version: HEAD, dir: harnesscloud_docker-conpaas-director }
         - { url: "https://github.com/harnesscloud/docker-conpaas-worker.git", 
@@ -144,7 +135,6 @@
         - harnesscloud_docker-baseimage-cloud
         - sequenceiq_docker-pam/ubuntu-14.04
         - harnesscloud_iaas-deployment-docker-image
-        - harnesscloud_docker-debian-cloudimage 
         - harnesscloud_docker-conpaas-director
         - harnesscloud_docker-conpaas-worker
 
@@ -159,7 +149,6 @@
         - harnesscloud_docker-baseimage-cloud
         - sequenceiq_docker-pam/ubuntu-14.04
         - harnesscloud_iaas-deployment-docker-image
-        - harnesscloud_docker-debian-cloudimage 
         - harnesscloud_docker-conpaas-director
         - harnesscloud_docker-conpaas-worker
 
@@ -175,7 +164,6 @@
         - sequenceiq_docker-pam/ubuntu-14.04
         - sequenceiq_docker-pam/ubuntu-14.04
         - harnesscloud_iaas-deployment-docker-image
-        - harnesscloud_docker-debian-cloudimage 
         - harnesscloud_docker-conpaas-director
         - harnesscloud_docker-conpaas-worker
 
@@ -190,7 +178,6 @@
         - harnesscloud_docker-baseimage-cloud
         - sequenceiq_docker-pam/ubuntu-14.04
         - harnesscloud_iaas-deployment-docker-image
-        - harnesscloud_docker-debian-cloudimage 
         - harnesscloud_docker-conpaas-director
         - harnesscloud_docker-conpaas-worker
 
@@ -207,7 +194,6 @@
         - { name: harnesscloud/baseimage-cloud, tag: latest, dir: harnesscloud_docker-baseimage-cloud }
         - { name: sequenceiq/pam, tag: ubuntu-14.04, dir: sequenceiq_docker-pam/ubuntu-14.04 }
         - { name: harnesscloud/iaas-deployment-docker-image, tag: latest, dir: harnesscloud_iaas-deployment-docker-image }
-        - { name: harnesscloud/debian-cloudimage, tag: latest, dir: harnesscloud_docker-debian-cloudimage }
         - { name: harnesscloud/conpaas-director, tag: latest, dir: harnesscloud_docker-conpaas-director }
         - { name: harnesscloud/conpaas-worker, tag: latest, dir: harnesscloud_docker-conpaas-worker }
 
