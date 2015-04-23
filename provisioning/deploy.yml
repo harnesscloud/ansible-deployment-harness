@@ -114,16 +114,24 @@
       sudo_user: "{{ ansible_ssh_user }}"
       git:
         repo: "{{ item.url }}"
+        version: "{{ item.version }}"
         dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}"
         update: no
       with_items:
-        - { url: "https://github.com/phusion/baseimage-docker.git", dir: phusion_baseimage-docker }
-        - { url: "https://github.com/harnesscloud/docker-baseimage-cloud.git", dir: harnesscloud_docker-baseimage-cloud }
-        - { url: "https://github.com/sequenceiq/docker-pam.git", dir: sequenceiq_docker-pam }
-        - { url: "https://github.com/harnesscloud/iaas-deployment-docker-image.git", dir: harnesscloud_iaas-deployment-docker-image }
-        - { url: "https://github.com/harnesscloud/docker-debian-cloudimage.git", dir: harnesscloud_docker-debian-cloudimage }
-        - { url: "https://github.com/harnesscloud/docker-conpaas-director.git", dir: harnesscloud_docker-conpaas-director }
-        - { url: "https://github.com/harnesscloud/docker-conpaas-worker.git", dir: harnesscloud_docker-conpaas-worker }
+        - { url: "https://github.com/phusion/baseimage-docker.git", 
+            version: HEAD, dir: phusion_baseimage-docker }
+        - { url: "https://github.com/harnesscloud/docker-baseimage-cloud.git", 
+            version: HEAD, dir: harnesscloud_docker-baseimage-cloud }
+        - { url: "https://github.com/sequenceiq/docker-pam.git", 
+            version: HEAD, dir: sequenceiq_docker-pam }
+        - { url: "https://github.com/harnesscloud/iaas-deployment-docker-image.git", 
+            version: HEAD, dir: harnesscloud_iaas-deployment-docker-image }
+        - { url: "https://github.com/harnesscloud/docker-debian-cloudimage.git", 
+            version: HEAD, dir: harnesscloud_docker-debian-cloudimage }
+        - { url: "https://github.com/harnesscloud/docker-conpaas-director.git", 
+            version: HEAD, dir: harnesscloud_docker-conpaas-director }
+        - { url: "https://github.com/harnesscloud/docker-conpaas-worker.git", 
+            version: HEAD, dir: harnesscloud_docker-conpaas-worker }
 
     - name: ensure that docker image builds are configured to use https_proxy
       lineinfile:
