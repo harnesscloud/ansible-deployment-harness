@@ -4,10 +4,12 @@
   roles:
     - chrony
 
+
 - hosts: controller:compute
   sudo: True
   roles:
     - docker
+
 
 - hosts: controller
   sudo: True
@@ -20,21 +22,23 @@
     - neutron-controller
     - horizon
 
+
 - hosts: network
   sudo: True
   roles:
     - neutron-network
+
 
 - hosts: compute
   sudo: True
   roles:
     - nova-compute-docker
 
-- hosts: controller:compute
+
+- hosts: compute
   sudo: True
   tasks:
-
-    - name: ensure required packages are installed
+    - name: ensure required packages are installed on compute nodes
       apt:
         pkg: "{{ item }}"
         state: latest
@@ -42,6 +46,11 @@
         cache_valid_time: 600
       with_items:
         - ohai
+
+
+- hosts: controller:compute
+  sudo: True
+  tasks:
 
     - name: ensure that docker is configured to use http_proxy
       lineinfile:
@@ -218,6 +227,7 @@
         - { name: phusion/baseimage, tag: latest, dir: phusion_baseimage-docker/image }
         - { name: harnesscloud/baseimage-cloud, tag: latest, dir: harnesscloud_docker-baseimage-cloud }
         - { name: harnesscloud/conpaas-worker, tag: latest, dir: harnesscloud_docker-conpaas-worker }
+
 
 - hosts: controller
   sudo: True
@@ -544,4 +554,5 @@
         iptables -t nat -A PREROUTING -p tcp --dport 443 -j DNAT --to {{ harness_floating_ip.public_ip }} &&
         invoke-rc.d iptables-persistent save
       when: ipt_dnat|failed
+
 
