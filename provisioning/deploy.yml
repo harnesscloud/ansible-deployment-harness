@@ -34,6 +34,15 @@
   sudo: True
   tasks:
 
+    - name: ensure required packages are installed
+      apt:
+        pkg: "{{ item }}"
+        state: latest
+        update_cache: yes
+        cache_valid_time: 600
+      with_items:
+        - ohai
+
     - name: ensure that docker is configured to use http_proxy
       lineinfile:
         dest: /etc/default/docker
