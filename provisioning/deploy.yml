@@ -518,6 +518,8 @@
           export IMAGE_ID=harnesscloud/conpaas-worker
 
     - name: ensure floating ip is associated with vm instance
+      environment:
+        http_proxy: ''
       neutron_floating_ip:
         auth_url: "{{ openstack_identity_public_url }}"
         login_tenant_name: harness
