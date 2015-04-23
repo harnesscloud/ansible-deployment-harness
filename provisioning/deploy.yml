@@ -120,7 +120,7 @@
         - { url: "https://github.com/harnesscloud/iaas-deployment-docker-image.git", 
             version: HEAD, dir: harnesscloud_iaas-deployment-docker-image }
         - { url: "https://github.com/harnesscloud/docker-conpaas-director.git", 
-            version: HEAD, dir: harnesscloud_docker-conpaas-director }
+            version: fix-grid5k, dir: harnesscloud_docker-conpaas-director }
         - { url: "https://github.com/harnesscloud/docker-conpaas-worker.git", 
             version: HEAD, dir: harnesscloud_docker-conpaas-worker }
 
