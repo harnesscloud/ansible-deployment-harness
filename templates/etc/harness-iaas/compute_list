@@ -4,7 +4,7 @@
     {
       "host_name" : "{{ hostvars[node].ansible_hostname }}",
       "location" : "/DataCenter1/Rack1/",
-      "frequency" : {{ hostvars[node].ohai_cpu['0'].mhz }},
+      "frequency" : {{ cpu_mhz.stdout }},
       "IP" : "{{ hostvars[node].ansible_all_ipv4_addresses[0] }}",
       "Cost": { 
         "Cores": 10,
