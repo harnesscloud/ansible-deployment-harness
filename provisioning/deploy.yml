@@ -35,19 +35,6 @@
     - nova-compute-docker
 
 
-- hosts: compute
-  sudo: True
-  tasks:
-    - name: ensure required packages are installed on compute nodes
-      apt:
-        pkg: "{{ item }}"
-        state: latest
-        update_cache: yes
-        cache_valid_time: 600
-      with_items:
-        - ohai
-
-
 - hosts: controller:compute
   sudo: True
   tasks:
