@@ -470,6 +470,12 @@
         mode: 0700
         state: directory
 
+    - name: register cpu mhz
+      shell: |
+        perl -lne 'print int($1 * ($2 eq 'G' ? 1000 : 1)) if /^model name\s*:.*@\s*([0-9.]+)(\w)/' /proc/cpuinfo | head -1
+      changed_when: False
+      register: cpu_mhz
+
     - name: update harness-iaas configuration files from templates
       template:
         src: templates/etc/harness-iaas/{{ item }}
