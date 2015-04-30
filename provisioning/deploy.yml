@@ -92,9 +92,7 @@
              creates=/usr/local/bin/pip
 
     - name: ensure docker client libraries are installed
-      pip:
-        name: docker-py
-        state: latest
+      command: pip install git+https://github.com/docker/docker-py.git@1.1.0-release#egg=docker-py
 
     - name: ensure docker image build directories exist
       file:
