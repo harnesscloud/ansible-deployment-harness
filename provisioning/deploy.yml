@@ -146,7 +146,7 @@
         - { url: "https://github.com/harnesscloud/docker-debian-cloudimage.git", 
             version: fix-grid5k, dir: harnesscloud_docker-debian-cloudimage }
         - { url: "https://github.com/harnesscloud/docker-conpaas-director.git", 
-            version: HEAD, dir: harnesscloud_docker-conpaas-director }
+            version: fix-grid5k, dir: harnesscloud_docker-conpaas-director }
         - { url: "https://github.com/phusion/baseimage-docker.git", 
             version: HEAD, dir: phusion_baseimage-docker }
         - { url: "https://github.com/harnesscloud/docker-baseimage-cloud.git", 
