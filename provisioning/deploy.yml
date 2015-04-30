@@ -3,7 +3,7 @@
   sudo: True
   environment:
     http_proxy: "{{ lookup('env', 'http_proxy') }}"
-    http_proxy: "{{ lookup('env', 'https_proxy') }}"
+    https_proxy: "{{ lookup('env', 'https_proxy') }}"
   roles:
     - chrony
 
@@ -12,7 +12,7 @@
   sudo: True
   environment:
     http_proxy: "{{ lookup('env', 'http_proxy') }}"
-    http_proxy: "{{ lookup('env', 'https_proxy') }}"
+    https_proxy: "{{ lookup('env', 'https_proxy') }}"
   roles:
     - docker
 
@@ -21,7 +21,7 @@
   sudo: True
   environment:
     http_proxy: "{{ lookup('env', 'http_proxy') }}"
-    http_proxy: "{{ lookup('env', 'https_proxy') }}"
+    https_proxy: "{{ lookup('env', 'https_proxy') }}"
   roles:
     - mysql
     - rabbitmq-server
@@ -36,7 +36,7 @@
   sudo: True
   environment:
     http_proxy: "{{ lookup('env', 'http_proxy') }}"
-    http_proxy: "{{ lookup('env', 'https_proxy') }}"
+    https_proxy: "{{ lookup('env', 'https_proxy') }}"
   roles:
     - neutron-network
 
@@ -45,7 +45,7 @@
   sudo: True
   environment:
     http_proxy: "{{ lookup('env', 'http_proxy') }}"
-    http_proxy: "{{ lookup('env', 'https_proxy') }}"
+    https_proxy: "{{ lookup('env', 'https_proxy') }}"
   roles:
     - nova-compute-docker
 
@@ -54,7 +54,7 @@
   sudo: True
   environment:
     http_proxy: "{{ lookup('env', 'http_proxy') }}"
-    http_proxy: "{{ lookup('env', 'https_proxy') }}"
+    https_proxy: "{{ lookup('env', 'https_proxy') }}"
   tasks:
 
     - name: ensure that docker is configured to use http_proxy
