@@ -1,18 +1,27 @@
 ---
 - hosts: all
   sudo: True
+  environment:
+    http_proxy: "{{ lookup('env', 'http_proxy') }}"
+    http_proxy: "{{ lookup('env', 'https_proxy') }}"
   roles:
     - chrony
 
 
 - hosts: controller:compute
   sudo: True
+  environment:
+    http_proxy: "{{ lookup('env', 'http_proxy') }}"
+    http_proxy: "{{ lookup('env', 'https_proxy') }}"
   roles:
     - docker
 
 
 - hosts: controller
   sudo: True
+  environment:
+    http_proxy: "{{ lookup('env', 'http_proxy') }}"
+    http_proxy: "{{ lookup('env', 'https_proxy') }}"
   roles:
     - mysql
     - rabbitmq-server
@@ -25,18 +34,27 @@
 
 - hosts: network
   sudo: True
+  environment:
+    http_proxy: "{{ lookup('env', 'http_proxy') }}"
+    http_proxy: "{{ lookup('env', 'https_proxy') }}"
   roles:
     - neutron-network
 
 
 - hosts: compute
   sudo: True
+  environment:
+    http_proxy: "{{ lookup('env', 'http_proxy') }}"
+    http_proxy: "{{ lookup('env', 'https_proxy') }}"
   roles:
     - nova-compute-docker
 
 
 - hosts: controller:compute
   sudo: True
+  environment:
+    http_proxy: "{{ lookup('env', 'http_proxy') }}"
+    http_proxy: "{{ lookup('env', 'https_proxy') }}"
   tasks:
 
     - name: ensure that docker is configured to use http_proxy
