@@ -28,12 +28,3 @@
         iptables -t nat -A POSTROUTING -s 10.1.0.0/16 -o eth0 -j MASQUERADE &&
         invoke-rc.d iptables-persistent save
       when: ipt_masquerade|failed
-
-    - debug:
-        msg: "{{ ansible_hostname }}"
-
-    - debug:
-        msg: "{{ groups }}"
-
-    - debug:
-        msg: "{{ hostvars.default }}"
