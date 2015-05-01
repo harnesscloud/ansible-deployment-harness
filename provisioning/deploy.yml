@@ -61,9 +61,11 @@
 
       - name: ubuntu
         file: ubuntu-14_04.tar.xz
+        group: all
 
       - name: debian
         file: debian-wheezy.tar.xz
+        group: compute
 
     docker_build_images:
 
@@ -73,6 +75,7 @@
         version: HEAD 
         dir: sequenceiq_docker-pam 
         buildsub: ubuntu-14.04
+        group: controller
 
       - name: harnesscloud/iaas-deployment-docker-image
         tag: latest
@@ -80,6 +83,7 @@
         version: HEAD
         dir: harnesscloud_iaas-deployment-docker-image 
         buildsub: ''
+        group: controller
 
       - name: harnesscloud/debian-cloudimage
         tag: latest
@@ -87,6 +91,7 @@
         version: fix-grid5k
         dir: harnesscloud_docker-debian-cloudimage 
         buildsub: ''
+        group: compute
 
       - name: harnesscloud/conpaas-director
         tag: latest
@@ -94,6 +99,7 @@
         version: fix-grid5k
         dir: harnesscloud_docker-conpaas-director 
         buildsub: ''
+        group: compute
 
       - name: phusion/baseimage
         tag: latest
@@ -101,6 +107,7 @@
         version: HEAD
         dir: phusion_baseimage-docker
         buildsub: image
+        group: compute
 
       - name: harnesscloud/baseimage-cloud
         tag: latest
@@ -108,6 +115,7 @@
         version: HEAD
         dir: harnesscloud_docker-baseimage-cloud 
         buildsub: ''
+        group: compute
 
       - name: harnesscloud/conpaas-worker
         tag: latest
@@ -115,6 +123,7 @@
         version: fix-grid5k
         dir: harnesscloud_docker-conpaas-worker
         buildsub: ''
+        group: compute
 
   tasks:
 
@@ -167,6 +176,7 @@
         src: docker/{{ item.file }}
         dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/"
         owner: "{{ ansible_ssh_user }}"
+      when: inventory_hostname == groups["{{ item.group }}"][0]
       with_items: docker_binary_images
 
     - name: register list of docker images
@@ -180,7 +190,9 @@
       environment:
         http_proxy: ''
       shell: xzcat {{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.file }} | docker load
-      when: -1 == docker_image_check.stdout.find("{{ item.name }}")
+      when: >
+        -1 == docker_image_check.stdout.find("{{ item.name }}") and
+        inventory_hostname in groups['{{ item.group }}']
       with_items: docker_binary_images
 
     - name: clone docker image repositories to remote systems
@@ -190,6 +202,7 @@
         version: "{{ item.version }}"
         dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}"
         update: no
+      when: inventory_hostname in groups['{{ item.group }}']
       with_items: docker_build_images
 
     - name: ensure that docker image builds are configured to use https_proxy
@@ -198,6 +211,7 @@
         line: ENV https_proxy={{ lookup('env', 'https_proxy') }}
         insertafter: ^MAINTAINER
         state: present
+      when: inventory_hostname in groups['{{ item.group }}']
       with_items: docker_build_images
 
     - name: ensure that docker image builds are configured to use http_proxy
@@ -206,6 +220,7 @@
         line: ENV http_proxy={{ lookup('env', 'http_proxy') }}
         insertafter: ^MAINTAINER
         state: present
+      when: inventory_hostname in groups['{{ item.group }}']
       with_items: docker_build_images
 
     - name: ensure that docker images are configured to NOT use http_proxy at runtime...
@@ -214,6 +229,7 @@
         line: ENV http_proxy=''
         insertbefore: ^CMD
         state: present
+      when: inventory_hostname in groups['{{ item.group }}']
       with_items: docker_build_images
 
     - name: ensure that docker images are configured to NOT use https_proxy at runtime...
@@ -222,6 +238,7 @@
         line: ENV https_proxy=''
         insertbefore: ^CMD
         state: present
+      when: inventory_hostname in groups['{{ item.group }}']
       with_items: docker_build_images
 
     - name: ensure docker images have been built
@@ -232,6 +249,7 @@
         tag: "{{ item.tag }}"
         path: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}/{{ item.buildsub }}"
         state: present
+      when: inventory_hostname in groups['{{ item.group }}']
       with_items: docker_build_images
 
 - hosts: controller
