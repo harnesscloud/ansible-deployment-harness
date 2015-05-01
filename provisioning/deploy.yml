@@ -75,9 +75,7 @@
       register: docker_big_http_proxy
 
     - name: restart docker if necessary
-      service:
-        name: docker
-        state: restarted
+      command: service docker restart
       when: docker_http_proxy|changed or docker_big_http_proxy|changed
 
     - name: ensure that login user is in the docker group
