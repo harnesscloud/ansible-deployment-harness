@@ -1,16 +1,27 @@
 ---
 - hosts: all
   sudo: True
+  environment:
+    http_proxy: "{{ lookup('env', 'http_proxy') }}"
+    https_proxy: "{{ lookup('env', 'https_proxy') }}"
   roles:
     - chrony
 
+
 - hosts: controller:compute
   sudo: True
+  environment:
+    http_proxy: "{{ lookup('env', 'http_proxy') }}"
+    https_proxy: "{{ lookup('env', 'https_proxy') }}"
   roles:
     - docker
 
+
 - hosts: controller
   sudo: True
+  environment:
+    http_proxy: "{{ lookup('env', 'http_proxy') }}"
+    https_proxy: "{{ lookup('env', 'https_proxy') }}"
   roles:
     - mysql
     - rabbitmq-server
@@ -20,24 +31,106 @@
     - neutron-controller
     - horizon
 
+
 - hosts: network
   sudo: True
+  environment:
+    http_proxy: "{{ lookup('env', 'http_proxy') }}"
+    https_proxy: "{{ lookup('env', 'https_proxy') }}"
   roles:
     - neutron-network
 
+
 - hosts: compute
   sudo: True
+  environment:
+    http_proxy: "{{ lookup('env', 'http_proxy') }}"
+    https_proxy: "{{ lookup('env', 'https_proxy') }}"
   roles:
     - nova-compute-docker
 
+
 - hosts: controller:compute
   sudo: True
+  environment:
+    http_proxy: "{{ lookup('env', 'http_proxy') }}"
+    https_proxy: "{{ lookup('env', 'https_proxy') }}"
+  vars:
+
+    docker_binary_images:
+
+      - name: ubuntu
+        file: ubuntu-14_04.tar.xz
+        group: all
+
+      - name: debian
+        file: debian-wheezy.tar.xz
+        group: compute
+
+    docker_build_images:
+
+      - name: sequenceiq/pam
+        tag: ubuntu-14.04
+        repo: "https://github.com/sequenceiq/docker-pam.git"
+        version: HEAD 
+        dir: sequenceiq_docker-pam 
+        buildsub: ubuntu-14.04
+        group: controller
+
+      - name: harnesscloud/iaas-deployment-docker-image
+        tag: latest
+        repo: "https://github.com/harnesscloud/iaas-deployment-docker-image.git"
+        version: HEAD
+        dir: harnesscloud_iaas-deployment-docker-image 
+        buildsub: ''
+        group: controller
+
+      - name: harnesscloud/debian-cloudimage
+        tag: latest
+        repo: "https://github.com/harnesscloud/docker-debian-cloudimage.git"
+        version: fix-grid5k
+        dir: harnesscloud_docker-debian-cloudimage 
+        buildsub: ''
+        group: compute
+
+      - name: harnesscloud/conpaas-director
+        tag: latest
+        repo: "https://github.com/harnesscloud/docker-conpaas-director.git"
+        version: fix-grid5k
+        dir: harnesscloud_docker-conpaas-director 
+        buildsub: ''
+        group: compute
+
+      - name: phusion/baseimage
+        tag: latest
+        repo: "https://github.com/phusion/baseimage-docker.git"
+        version: HEAD
+        dir: phusion_baseimage-docker
+        buildsub: image
+        group: compute
+
+      - name: harnesscloud/baseimage-cloud
+        tag: latest
+        repo: "https://github.com/harnesscloud/docker-baseimage-cloud.git"
+        version: HEAD
+        dir: harnesscloud_docker-baseimage-cloud 
+        buildsub: ''
+        group: compute
+
+      - name: harnesscloud/conpaas-worker
+        tag: latest
+        repo: "https://github.com/harnesscloud/docker-conpaas-worker.git"
+        version: fix-grid5k
+        dir: harnesscloud_docker-conpaas-worker
+        buildsub: ''
+        group: compute
+
   tasks:
 
     - name: ensure that docker is configured to use http_proxy
       lineinfile:
         dest: /etc/default/docker
-        line: export http_proxy="{{ ansible_env.http_proxy }}"
+        line: export http_proxy="{{ lookup('env', 'http_proxy') }}"
         regexp: export http_proxy=
         state: present
       register: docker_http_proxy
@@ -45,16 +138,14 @@
     - name: ensure that docker is configured to use http_proxy
       lineinfile:
         dest: /etc/default/docker
-        line: export HTTP_PROXY="{{ ansible_env.http_proxy }}"
+        line: export HTTP_PROXY="{{ lookup('env', 'http_proxy') }}"
         regexp: export HTTP_PROXY=
         insertafter: export http_proxy=
         state: present
       register: docker_big_http_proxy
 
     - name: restart docker if necessary
-      service:
-        name: docker
-        state: restarted
+      command: service docker restart
       when: docker_http_proxy|changed or docker_big_http_proxy|changed
 
     - name: ensure that login user is in the docker group
@@ -69,9 +160,7 @@
              creates=/usr/local/bin/pip
 
     - name: ensure docker client libraries are installed
-      pip:
-        name: docker-py
-        state: latest
+      command: pip install git+https://github.com/docker/docker-py.git@1.1.0-release#egg=docker-py
 
     - name: ensure docker image build directories exist
       file:
@@ -82,10 +171,13 @@
         - "{{ ansible_env.PWD }}/.ansible_cache"
         - "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild"
 
-    - name: copy ubuntu image to remote system
+    - name: copy binary images to remote system
       copy:
-        src: docker/ubuntu-14_04.tar.xz
+        src: docker/{{ item.file }}
         dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/"
+        owner: "{{ ansible_ssh_user }}"
+      when: inventory_hostname in groups['{{ item.group }}']
+      with_items: docker_binary_images
 
     - name: register list of docker images
       environment:
@@ -94,54 +186,74 @@
       register: docker_image_check
       changed_when: false
 
-    - name: load ubuntu image if necessary
+    - name: load binary images if necessary
       environment:
         http_proxy: ''
-      shell: xzcat {{ ansible_env.PWD }}/.ansible_cache/dockerbuild/ubuntu-14_04.tar.xz | docker load
-      when: -1 == docker_image_check.stdout.find("ubuntu")
+      shell: xzcat {{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.file }} | docker load
+      when: >
+        -1 == docker_image_check.stdout.find("{{ item.name }}") and
+        inventory_hostname in groups['{{ item.group }}']
+      with_items: docker_binary_images
 
-    - name: clone docker phusion/baseimage repository to remote system
+    - name: clone docker image repositories to remote systems
+      sudo_user: "{{ ansible_ssh_user }}"
       git:
-        repo: https://github.com/phusion/baseimage-docker.git
-        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/phusion_baseimage-docker"
+        repo: "{{ item.repo }}"
+        version: "{{ item.version }}"
+        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}"
+        update: no
+      when: inventory_hostname in groups['{{ item.group }}']
+      with_items: docker_build_images
 
-    - name: ensure that phusion/baseimage build is configured to use http_proxy
+    - name: ensure that docker image builds are configured to use https_proxy
       lineinfile:
-        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/phusion_baseimage-docker/image/Dockerfile"
-        line: ENV http_proxy={{ ansible_env.http_proxy }}
+        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}/{{ item.buildsub }}/Dockerfile"
+        line: ENV https_proxy={{ lookup('env', 'https_proxy') }}
         insertafter: ^MAINTAINER
         state: present
+      when: inventory_hostname in groups['{{ item.group }}']
+      with_items: docker_build_images
 
-    - name: ensure that phusion/baseimage is configured to NOT use http_proxy at init...
+    - name: ensure that docker image builds are configured to use http_proxy
       lineinfile:
-        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/phusion_baseimage-docker/image/Dockerfile"
+        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}/{{ item.buildsub }}/Dockerfile"
+        line: ENV http_proxy={{ lookup('env', 'http_proxy') }}
+        insertafter: ^MAINTAINER
+        state: present
+      when: inventory_hostname in groups['{{ item.group }}']
+      with_items: docker_build_images
+
+    - name: ensure that docker images are configured to NOT use http_proxy at runtime...
+      lineinfile:
+        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}/{{ item.buildsub }}/Dockerfile"
         line: ENV http_proxy=''
         insertbefore: ^CMD
         state: present
+      when: inventory_hostname in groups['{{ item.group }}']
+      with_items: docker_build_images
 
-    - name: ensure docker phusion/baseimage image has been built
+    - name: ensure that docker images are configured to NOT use https_proxy at runtime...
+      lineinfile:
+        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}/{{ item.buildsub }}/Dockerfile"
+        line: ENV https_proxy=''
+        insertbefore: ^CMD
+        state: present
+      when: inventory_hostname in groups['{{ item.group }}']
+      with_items: docker_build_images
+
+    - name: ensure docker images have been built
       environment:
         http_proxy: ''
       docker_image:
-        name: phusion/baseimage
-        path: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/phusion_baseimage-docker/image"
+        name: "{{ item.name }}"
+        tag: "{{ item.tag }}"
+        path: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}/{{ item.buildsub }}"
         state: present
-
-    - name: clone docker marklee77/docker-baseimage-cloud repository to remote system
-      git:
-        repo: https://github.com/marklee77/docker-baseimage-cloud.git
-        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/marklee77_docker-baseimage-cloud"
-
-    - name: ensure docker marklee77/baseimage-cloud image has been built
-      environment:
-        http_proxy: ''
-      docker_image:
-        name: marklee77/baseimage-cloud
-        path: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/marklee77_docker-baseimage-cloud"
-        state: present
+      when: inventory_hostname in groups['{{ item.group }}']
+      with_items: docker_build_images
 
 - hosts: controller
-  sudo: False
+  sudo: True
   tasks:
 
     - name: update admin.openrc from template
@@ -149,6 +261,7 @@
         src: templates/admin.openrc
         dest: "{{ ansible_env.PWD }}/admin.openrc"
         owner: "{{ ansible_ssh_user }}"
+        mode: 0600
 
     - name: create harness tenant
       environment:
@@ -183,22 +296,28 @@
       template:
         src: templates/harness.openrc
         dest: "{{ ansible_env.PWD }}/harness.openrc"
+        owner: "{{ ansible_ssh_user }}"
         mode: 0600
 
-    - name: check to see if image has been registered with glance
+    - name: check to see what images have been registered with glance
       environment:
         http_proxy: ''
       command: glance --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name harness --os-username harness --os-password "{{ openstack_identity_harness_password }}" image-list
       register: glance_image_check
       changed_when: false
 
-    - name: import image into glance if necessary
+    - name: import harnesscloud/conpaas-director image into glance if necessary
       environment:
         http_proxy: ''
-      shell: docker save marklee77/baseimage-cloud | glance --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name harness --os-username harness --os-password "{{ openstack_identity_harness_password }}" image-create --name=marklee77/baseimage-cloud --is-public=true --container-format=docker --disk-format=raw
-      when: -1 == glance_image_check.stdout.find("marklee77/baseimage-cloud")
+      shell: echo "docker save {{ item }}" | glance --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name harness --os-username harness --os-password "{{ openstack_identity_harness_password }}" image-create --name={{ item }} --is-public=true --container-format=docker --disk-format=raw
+      when: -1 == glance_image_check.stdout.find("{{ item }}")
+      with_items:
+        - harnesscloud/baseimage-cloud
+        - harnesscloud/conpaas-director
+        - harnesscloud/conpaas-worker
 
-    - name: query glance for image id
+
+    - name: query glance for harnesscloud/conpaas-director image id
       environment:
         http_proxy: ''
       glance_image:
@@ -206,10 +325,23 @@
         login_tenant_name: harness
         login_username: harness
         login_password: "{{ openstack_identity_harness_password }}"
-        name: marklee77/baseimage-cloud
+        name: harnesscloud/conpaas-director
         file: /tmp/dummy
         state: present
-      register: harness_image
+      register: conpaas_director_image
+ 
+    - name: query glance for harnesscloud/conpaas-worker image id
+      environment:
+        http_proxy: ''
+      glance_image:
+        auth_url: "{{ openstack_identity_public_url }}"
+        login_tenant_name: harness
+        login_username: harness
+        login_password: "{{ openstack_identity_harness_password }}"
+        name: harnesscloud/conpaas-worker
+        file: /tmp/dummy
+        state: present
+      register: conpaas_worker_image
     
     # Ansible neutron modules lists all tenants to get ids, but this is not
     # permitted for non-admin users. Need to fix neutron_* modules as non-admin
@@ -293,6 +425,7 @@
         state: present
 
     - name: create ssh keypair
+      sudo_user: "{{ ansible_ssh_user }}"
       command: ssh-keygen -q -f {{ ansible_env.PWD }}/.ssh/id_rsa -P ""
                creates={{ ansible_env.PWD }}/.ssh/id_rsa
 
@@ -315,7 +448,7 @@
 
     # the neutron_sec_group module needs work...
     
-    - name: verity existence of harness security group
+    - name: verify existence of harness security group
       environment:
         http_proxy: ''
       command: neutron --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name harness --os-username harness --os-password "{{ openstack_identity_harness_password }}" security-group-show harness-secgroup
@@ -341,47 +474,125 @@
       command: neutron --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name harness --os-username harness --os-password "{{ openstack_identity_harness_password }}" security-group-rule-create --direction=ingress --protocol=tcp --port-range-min=22 --port-range-max=22 harness-secgroup
       when: verify_secgroup|failed
 
-    #- name: create a new virtual machine instance
-    #  environment:
-    #    http_proxy: ''
-    #  nova_compute:
-    #    auth_url: "{{ openstack_identity_public_url }}"
-    #    login_tenant_name: harness
-    #    login_username: harness
-    #    login_password: "{{ openstack_identity_harness_password }}"
-    #    name: harness-instance
-    #    flavor_id: 1
-    #    image_id: "{{ harness_image.id }}"
-    #    nics:
-    #      - net-id: "{{ openstack_network_internal.id }}"
-    #    key_name: harness-keypair
-    #    security_groups: harness-secgroup
-    #    wait: "yes"
-    #    state: present
+    - name: ensure that harness-secgroup allows http
+      environment:
+        http_proxy: ''
+      command: neutron --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name harness --os-username harness --os-password "{{ openstack_identity_harness_password }}" security-group-rule-create --direction=ingress --protocol=tcp --port-range-min=80 --port-range-max=80 harness-secgroup
+      when: verify_secgroup|failed
 
-    #- name: ensure floating ip is associated with vm instance
-    #  environment:
-    #    http_proxy: ''
-    #  neutron_floating_ip:
-    #    auth_url: "{{ openstack_identity_public_url }}"
-    #    login_tenant_name: harness
-    #    login_username: harness
-    #    login_password: "{{ openstack_identity_harness_password }}"
-    #    instance_name: harness-instance
-    #    network_name: public
-    #    state: present
-    #  register: harness_floating_ip
+    - name: ensure that harness-secgroup allows https
+      environment:
+        http_proxy: ''
+      command: neutron --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name harness --os-username harness --os-password "{{ openstack_identity_harness_password }}" security-group-rule-create --direction=ingress --protocol=tcp --port-range-min=443 --port-range-max=443 harness-secgroup
+      when: verify_secgroup|failed
 
-    #- name: wait for ssh to become available
-    #  wait_for:
-    #    host: "{{ harness_floating_ip.public_ip }}"
-    #    port: 22
+    - name: ensure harness iaas configuration directory exists
+      file:
+        path: /etc/harness-iaas
+        owner: root
+        group: root
+        mode: 0700
+        state: directory
 
-    #- name: ping harness virtual machine
-    #  command: ping -c 4 {{ harness_floating_ip.public_ip }}
-    #  changed_when: false
+    - name: register cpu mhz
+      shell: |
+        perl -lne 'print int($1 * ($2 eq 'G' ? 1000 : 1)) if /^model name\s*:.*@\s*([0-9.]+)(\w)/' /proc/cpuinfo | head -1
+      changed_when: False
+      register: cpu_mhz
 
-    #- name: verify that virtual machine can be logged into via ssh
-    #  command: ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@{{ harness_floating_ip.public_ip }} hostname
-    #  changed_when: false
+    - name: update harness-iaas configuration files from templates
+      template:
+        src: templates/etc/harness-iaas/{{ item }}
+        dest: /etc/harness-iaas/{{ item }}
+        owner: root
+        group: root
+        mode: 0600
+      with_items:
+        - compute_list
+        - crs.constraints
+
+    - name: ensure that harness iaas service is started
+      docker:
+        name: harness-iaas-services
+        image: harnesscloud/iaas-deployment-docker-image
+        env:
+          main_PASSWORD: "{{ openstack_identity_harness_password }}"
+          main_NOVA_ENDPOINT: "{{ openstack_compute_endpoint_host }}:5000"
+          CRS_DEFAULT_IMAGE: "{{ conpaas_worker_image.id }}"
+          network_UUID: "{{ openstack_network_internal.id }}"
+        volumes: /etc/harness-iaas:/etc/harness-iaas:ro
+        ports:
+          - 8888:8888
+          - 56789:56789
+
+    - name: create a new conpaas-admin virtual machine instance
+      nova_compute:
+        auth_url: "{{ openstack_identity_public_url }}"
+        login_tenant_name: harness
+        login_username: harness
+        login_password: "{{ openstack_identity_harness_password }}"
+        name: conpaas-director
+        flavor_id: 2
+        image_id: "{{ conpaas_director_image.id }}"
+        nics:
+          - net-id: "{{ openstack_network_internal.id }}"
+        key_name: harness-keypair
+        security_groups: harness-secgroup
+        wait: "yes"
+        state: present
+        user_data: |
+          export USERNAME=test
+          export PASSWORD=password
+          export IP_PREFIX=192.168.13.
+          export CRS_URL=http://{{ openstack_controller_ip }}:56789
+          export IMAGE_ID=harnesscloud/conpaas-worker
+
+    - name: ensure floating ip is associated with vm instance
+      environment:
+        http_proxy: ''
+      neutron_floating_ip:
+        auth_url: "{{ openstack_identity_public_url }}"
+        login_tenant_name: harness
+        login_username: harness
+        login_password: "{{ openstack_identity_harness_password }}"
+        instance_name: conpaas-director
+        network_name: public
+        state: present
+      register: harness_floating_ip
+
+    - name: ping harness virtual machine
+      command: ping -c 4 {{ harness_floating_ip.public_ip }}
+      changed_when: false
+
+    - name: wait for ssh to become available
+      wait_for:
+        host: "{{ harness_floating_ip.public_ip }}"
+        port: 22
+
+    - name: verify that virtual machine can be logged into via ssh
+      sudo_user: "{{ ansible_ssh_user }}"
+      command: ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@{{ harness_floating_ip.public_ip }} hostname
+      changed_when: false
+
+    - name: ensure required packages for iptables persistence are installed
+      apt:
+        pkg: "{{ item }}"
+        state: latest
+        update_cache: yes
+        cache_valid_time: 600
+      with_items:
+        - iptables-persistent
+
+    - name: check to see if dnat rule is present
+      command: iptables -t nat -C PREROUTING -p tcp --dport 443 -j DNAT --to {{ harness_floating_ip.public_ip }}
+      register: ipt_dnat
+      ignore_errors: yes
+      changed_when: false
+
+    - name: add dnat rule if not present
+      shell: >
+        iptables -t nat -A PREROUTING -p tcp --dport 443 -j DNAT --to {{ harness_floating_ip.public_ip }} &&
+        invoke-rc.d iptables-persistent save
+      when: ipt_dnat|failed
+
 

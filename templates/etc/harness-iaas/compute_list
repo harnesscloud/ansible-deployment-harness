@@ -1,0 +1,17 @@
+{
+  "Machine": [
+    {% for node in groups.compute -%}
+    {
+      "host_name" : "{{ hostvars[node].ansible_hostname }}",
+      "location" : "/DataCenter1/Rack1/",
+      "frequency" : {{ cpu_mhz.stdout }},
+      "IP" : "{{ hostvars[node].ansible_all_ipv4_addresses[0] }}",
+      "Cost": { 
+        "Cores": 10,
+        "Memory": 2,
+        "Disk": 12
+      }
+    }{% if not loop.last %},{% endif %}
+    {%- endfor %}
+  ]
+}
