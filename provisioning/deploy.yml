@@ -91,7 +91,7 @@
       - name: harnesscloud/conpaas-director
         tag: latest
         repo: "https://github.com/harnesscloud/docker-conpaas-director.git"
-        version: fix-grid5k, 
+        version: fix-grid5k
         dir: harnesscloud_docker-conpaas-director 
         buildsub: ''
 
