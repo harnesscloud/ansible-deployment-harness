@@ -55,6 +55,67 @@
   environment:
     http_proxy: "{{ lookup('env', 'http_proxy') }}"
     https_proxy: "{{ lookup('env', 'https_proxy') }}"
+  vars:
+
+    docker_binary_images:
+
+      - name: ubuntu
+        file: ubuntu-14_04.tar.xz
+
+      - name: debian
+        file: debian-wheezy.tar.xz
+
+    docker_build_images:
+
+      - name: sequenceiq/pam
+        tag: ubuntu-14.04
+        repo: "https://github.com/sequenceiq/docker-pam.git"
+        version: HEAD 
+        dir: sequenceiq_docker-pam 
+        buildsub: ubuntu-14.04
+
+      - name: harnesscloud/iaas-deployment-docker-image
+        tag: latest
+        repo: "https://github.com/harnesscloud/iaas-deployment-docker-image.git"
+        version: HEAD
+        dir: harnesscloud_iaas-deployment-docker-image 
+        buildsub: ''
+
+      - name: harnesscloud/debian-cloudimage
+        tag: latest
+        repo: "https://github.com/harnesscloud/docker-debian-cloudimage.git"
+        version: fix-grid5k
+        dir: harnesscloud_docker-debian-cloudimage 
+        buildsub: ''
+
+      - name: harnesscloud/conpaas-director
+        tag: latest
+        repo: "https://github.com/harnesscloud/docker-conpaas-director.git"
+        version: fix-grid5k, 
+        dir: harnesscloud_docker-conpaas-director 
+        buildsub: ''
+
+      - name: phusion/baseimage
+        tag: latest
+        repo: "https://github.com/phusion/baseimage-docker.git"
+        version: HEAD
+        dir: phusion_baseimage-docker
+        buildsub: image
+
+      - name: harnesscloud/baseimage-cloud
+        tag: latest
+        repo: "https://github.com/harnesscloud/docker-baseimage-cloud.git"
+        version: HEAD
+        dir: harnesscloud_docker-baseimage-cloud 
+        buildsub: ''
+
+      - name: harnesscloud/conpaas-worker
+        tag: latest
+        repo: "https://github.com/harnesscloud/docker-conpaas-worker.git"
+        version: fix-grid5k
+        dir: harnesscloud_docker-conpaas-worker
+        buildsub: ''
+
   tasks:
 
     - name: ensure that docker is configured to use http_proxy
@@ -103,12 +164,10 @@
 
     - name: copy binary images to remote system
       copy:
-        src: docker/{{ item }}
+        src: docker/{{ item.file }}
         dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/"
         owner: "{{ ansible_ssh_user }}"
-      with_items:
-        - ubuntu-14_04.tar.xz
-        - debian-wheezy.tar.xz
+      with_items: docker_binary_images
 
     - name: register list of docker images
       environment:
@@ -117,100 +176,53 @@
       register: docker_image_check
       changed_when: false
 
-    - name: load ubuntu image if necessary
+    - name: load binary images if necessary
       environment:
         http_proxy: ''
-      shell: xzcat {{ ansible_env.PWD }}/.ansible_cache/dockerbuild/ubuntu-14_04.tar.xz | docker load
-      when: -1 == docker_image_check.stdout.find("ubuntu")
-
-    - name: load debian image if necessary
-      environment:
-        http_proxy: ''
-      shell: xzcat {{ ansible_env.PWD }}/.ansible_cache/dockerbuild/debian-wheezy.tar.xz | docker load
-      when: -1 == docker_image_check.stdout.find("debian")
+      shell: xzcat {{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.file }} | docker load
+      when: -1 == docker_image_check.stdout.find("{{ item.name }}")
+      with_items: docker_binary_images
 
     - name: clone docker image repositories to remote systems
       sudo_user: "{{ ansible_ssh_user }}"
       git:
-        repo: "{{ item.url }}"
+        repo: "{{ item.repo }}"
         version: "{{ item.version }}"
         dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}"
         update: no
-      with_items:
-        - { url: "https://github.com/sequenceiq/docker-pam.git", 
-            version: HEAD, dir: sequenceiq_docker-pam }
-        - { url: "https://github.com/harnesscloud/iaas-deployment-docker-image.git", 
-            version: HEAD, dir: harnesscloud_iaas-deployment-docker-image }
-        - { url: "https://github.com/harnesscloud/docker-debian-cloudimage.git", 
-            version: fix-grid5k, dir: harnesscloud_docker-debian-cloudimage }
-        - { url: "https://github.com/harnesscloud/docker-conpaas-director.git", 
-            version: fix-grid5k, dir: harnesscloud_docker-conpaas-director }
-        - { url: "https://github.com/phusion/baseimage-docker.git", 
-            version: HEAD, dir: phusion_baseimage-docker }
-        - { url: "https://github.com/harnesscloud/docker-baseimage-cloud.git", 
-            version: HEAD, dir: harnesscloud_docker-baseimage-cloud }
-        - { url: "https://github.com/harnesscloud/docker-conpaas-worker.git", 
-            version: fix-grid5k, dir: harnesscloud_docker-conpaas-worker }
+      with_items: docker_build_images
 
     - name: ensure that docker image builds are configured to use https_proxy
       lineinfile:
-        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item }}/Dockerfile"
+        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}/{{ item.buildsub }}/Dockerfile"
         line: ENV https_proxy={{ lookup('env', 'https_proxy') }}
         insertafter: ^MAINTAINER
         state: present
-      with_items:
-        - sequenceiq_docker-pam/ubuntu-14.04
-        - harnesscloud_iaas-deployment-docker-image
-        - phusion_baseimage-docker/image
-        - harnesscloud_docker-debian-cloudimage
-        - harnesscloud_docker-conpaas-director
-        - harnesscloud_docker-baseimage-cloud
-        - harnesscloud_docker-conpaas-worker
+      with_items: docker_build_images
 
     - name: ensure that docker image builds are configured to use http_proxy
       lineinfile:
-        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item }}/Dockerfile"
+        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}/{{ item.buildsub }}/Dockerfile"
         line: ENV http_proxy={{ lookup('env', 'http_proxy') }}
         insertafter: ^MAINTAINER
         state: present
-      with_items:
-        - sequenceiq_docker-pam/ubuntu-14.04
-        - harnesscloud_iaas-deployment-docker-image
-        - harnesscloud_docker-debian-cloudimage
-        - harnesscloud_docker-conpaas-director
-        - phusion_baseimage-docker/image
-        - harnesscloud_docker-baseimage-cloud
-        - harnesscloud_docker-conpaas-worker
+      with_items: docker_build_images
 
     - name: ensure that docker images are configured to NOT use http_proxy at runtime...
       lineinfile:
-        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item }}/Dockerfile"
+        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}/{{ item.buildsub }}/Dockerfile"
         line: ENV http_proxy=''
         insertbefore: ^CMD
         state: present
-      with_items:
-        - sequenceiq_docker-pam/ubuntu-14.04
-        - harnesscloud_iaas-deployment-docker-image
-        - harnesscloud_docker-debian-cloudimage
-        - harnesscloud_docker-conpaas-director
-        - phusion_baseimage-docker/image
-        - harnesscloud_docker-baseimage-cloud
-        - harnesscloud_docker-conpaas-worker
+      with_items: docker_build_images
 
     - name: ensure that docker images are configured to NOT use https_proxy at runtime...
       lineinfile:
-        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item }}/Dockerfile"
+        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}/{{ item.buildsub }}/Dockerfile"
         line: ENV https_proxy=''
         insertbefore: ^CMD
         state: present
-      with_items:
-        - sequenceiq_docker-pam/ubuntu-14.04
-        - harnesscloud_iaas-deployment-docker-image
-        - harnesscloud_docker-debian-cloudimage
-        - harnesscloud_docker-conpaas-director
-        - phusion_baseimage-docker/image
-        - harnesscloud_docker-baseimage-cloud
-        - harnesscloud_docker-conpaas-worker
+      with_items: docker_build_images
 
     - name: ensure docker images have been built
       environment:
@@ -220,15 +232,7 @@
         tag: "{{ item.tag }}"
         path: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}"
         state: present
-      with_items:
-        - { name: sequenceiq/pam, tag: ubuntu-14.04, dir: sequenceiq_docker-pam/ubuntu-14.04 }
-        - { name: harnesscloud/iaas-deployment-docker-image, tag: latest, dir: harnesscloud_iaas-deployment-docker-image }
-        - { name: harnesscloud/debian-cloudimage, tag: latest, dir: harnesscloud_docker-debian-cloudimage }
-        - { name: harnesscloud/conpaas-director, tag: latest, dir: harnesscloud_docker-conpaas-director }
-        - { name: phusion/baseimage, tag: latest, dir: phusion_baseimage-docker/image }
-        - { name: harnesscloud/baseimage-cloud, tag: latest, dir: harnesscloud_docker-baseimage-cloud }
-        - { name: harnesscloud/conpaas-worker, tag: latest, dir: harnesscloud_docker-conpaas-worker }
-
+      with_items: docker_build_images
 
 - hosts: controller
   sudo: True
