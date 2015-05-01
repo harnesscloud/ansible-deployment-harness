@@ -550,8 +550,16 @@
       sudo_user: "{{ ansible_ssh_user }}"
       command: ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@{{ harness_floating_ip.public_ip }} hostname
       changed_when: false
- 
-    # FIXME: probably do not want these for g5k, but need floatingip...
+
+    - name: ensure required packages for iptables persistence are installed
+      apt:
+        pkg: "{{ item }}"
+        state: latest
+        update_cache: yes
+        cache_valid_time: 600
+      with_items:
+        - iptables-persistent
+
     - name: check to see if dnat rule is present
       command: iptables -t nat -C PREROUTING -p tcp --dport 443 -j DNAT --to {{ harness_floating_ip.public_ip }}
       register: ipt_dnat
