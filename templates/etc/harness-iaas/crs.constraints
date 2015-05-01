@@ -1,0 +1,18 @@
+{
+   "Hosts": {
+      {% for node in groups.compute -%}
+      "{{ node }}" : "{{ hostvars[node].ansible_all_ipv4_addresses[0] }}"{% if not loop.last %},{% endif %}
+      {%- endfor %}
+   },   
+   "Zones": [
+      {
+         "Name": "Commodity",
+         "Hosts": [
+         {% for node in groups.compute -%}
+         "{{ node }}"{% if not loop.last %},{% endif %}
+         {%- endfor %}
+         ],
+         "Types": ["Machine", "Storage"]
+      }
+   ]
+}

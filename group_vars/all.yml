@@ -1,43 +1,12 @@
 ---
-# FIXME: how many of these could be eliminated?
-openstack_run_dir: "{{ lookup('env', 'PWD') }}"
-openstack_identity_admin_token: >
-  {{ lookup('password', openstack_run_dir +
-                        '/private/credentials/keystone-admin-token
-                         length=20
-                         chars=ascii_letters,digits') }}
+openstack_repository_prefix: "https://github.com/openstack-ansible/"
 
-openstack_identity_harness_password: password
-
-mysql_bind_address: "0.0.0.0"
-
-openstack_controller_ip: "{{ hostvars[groups.controller[0]].ansible_all_ipv4_addresses[0] }}"
+openstack_controller_ip: "{{ hostvars[groups.controller[0]].ansible_default_ipv4.address }}"
 
 openstack_rabbitmq_host: "{{ openstack_controller_ip }}"
 openstack_mysql_host: "{{ openstack_controller_ip }}"
 
 openstack_identity_endpoint_host: "{{ openstack_controller_ip }}"
-openstack_identity_admin_url: >
-  http://{{ openstack_identity_endpoint_host }}:35357/v2.0
-openstack_identity_public_url: >
-  http://{{ openstack_identity_endpoint_host }}:5000/v2.0
-
 openstack_image_endpoint_host: "{{ openstack_controller_ip }}"
 openstack_compute_endpoint_host: "{{ openstack_controller_ip }}"
 openstack_network_endpoint_host: "{{ openstack_controller_ip }}"
-
-openstack_compute_node_ip: "{{ ansible_all_ipv4_addresses[0] }}"
-openstack_network_node_ip: "{{ ansible_all_ipv4_addresses[0] }}"
-
-# FIXME: not elegant, but get the first active ethernet device...
-openstack_network_external_device: "{{ ([ansible_eth0, ansible_eth1, ansible_eth2, ansible_eth3, ansible_eth4]|selectattr('active')|first).device }}"
-
-openstack_network_external_network: "10.1.0.0/16"
-openstack_network_external_gateway: "10.1.0.1"
-openstack_network_external_allocation_pool_start: "10.1.0.100"
-openstack_network_external_allocation_pool_end: "10.1.0.200"
-openstack_network_external_dns_servers: "8.8.8.8"
-
-openstack_compute_nova_docker_branch: harness-demo
-
-openstack_default_region: RegionOne
