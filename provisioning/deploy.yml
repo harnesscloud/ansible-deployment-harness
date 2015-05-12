@@ -160,7 +160,7 @@
              creates=/usr/local/bin/pip
 
     - name: ensure docker client libraries are installed
-      command: pip install git+https://github.com/docker/docker-py.git@1.1.0-release#egg=docker-py
+      command: pip install git+https://github.com/docker/docker-py.git@1.1.0#egg=docker-py
 
     - name: ensure docker image build directories exist
       file:
