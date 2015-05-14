@@ -21,11 +21,15 @@ openstack_network_external_dns_servers=$(g5k-subnets -d | perl -lane 'print $F[-
 cat <<EOF
 {
     "controller" : {
-        "hosts" : [ "${nodes[0]}" ]
+        "hosts" : [ "${nodes[0]}" ],
+        "vars"  : {
+            "ansible_ssh_user" : "root"
+        }
     },
     "network"    : {
         "hosts" : [ "${nodes[0]}" ],
         "vars"  : {
+            "ansible_ssh_user" : "root",
             "openstack_network_external_network" : "$openstack_network_external_network",
             "openstack_network_external_gateway" : "$openstack_network_external_gateway",
             "openstack_network_external_allocation_pool_start" : "$openstack_network_external_allocation_pool_start",
@@ -34,7 +38,10 @@ cat <<EOF
         }
     },
     "compute"    : {
-        "hosts" : [ "$(echo ${nodes[@]:1} | perl -lane 'print join "\", \"", @F')" ]
+        "hosts" : [ "$(echo ${nodes[@]:1} | perl -lane 'print join "\", \"", @F')" ],
+        "vars"  : {
+            "ansible_ssh_user" : "root"
+        }
     }
 }
 EOF
