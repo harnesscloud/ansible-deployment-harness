@@ -1,5 +1,6 @@
 echo "setting admin login variables and disabling http_proxy"
 unset http_proxy
+unset HTTP_PROXY
 unset OS_USERNAME
 unset OS_TENANT_NAME
 unset OS_PASSWORD

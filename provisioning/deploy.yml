@@ -232,6 +232,15 @@
       when: inventory_hostname in groups['{{ item.group }}']
       with_items: docker_build_images
 
+    - name: ensure that docker images are configured to NOT use HTTP_PROXY at runtime...
+      lineinfile:
+        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}/{{ item.buildsub }}/Dockerfile"
+        line: ENV HTTP_PROXY=''
+        insertbefore: ^CMD
+        state: present
+      when: inventory_hostname in groups['{{ item.group }}']
+      with_items: docker_build_images
+
     - name: ensure that docker images are configured to NOT use https_proxy at runtime...
       lineinfile:
         dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}/{{ item.buildsub }}/Dockerfile"
@@ -241,9 +250,20 @@
       when: inventory_hostname in groups['{{ item.group }}']
       with_items: docker_build_images
 
+    - name: ensure that docker images are configured to NOT use HTTPS_PROXY at runtime...
+      lineinfile:
+        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}/{{ item.buildsub }}/Dockerfile"
+        line: ENV HTTPS_PROXY=''
+        insertbefore: ^CMD
+        state: present
+      when: inventory_hostname in groups['{{ item.group }}']
+      with_items: docker_build_images
+
+
     - name: ensure docker images have been built
       environment:
         http_proxy: ''
+        HTTP_PROXY: ''
       docker_image:
         name: "{{ item.name }}"
         tag: "{{ item.tag }}"
@@ -266,6 +286,7 @@
     - name: create harness tenant
       environment:
         http_proxy: ''
+        HTTP_PROXY: ''
       keystone_user:
         endpoint: "{{ openstack_identity_admin_url }}"
         token: "{{ openstack_identity_admin_token }}"
@@ -275,6 +296,7 @@
     - name: create harness user
       environment:
         http_proxy: ''
+        HTTP_PROXY: ''
       keystone_user:
         endpoint: "{{ openstack_identity_admin_url }}"
         token: "{{ openstack_identity_admin_token }}"
@@ -285,6 +307,7 @@
     - name: associate _member_ role with harness user
       environment:
         http_proxy: ''
+        HTTP_PROXY: ''
       keystone_user:
         endpoint: "{{ openstack_identity_admin_url }}"
         token: "{{ openstack_identity_admin_token }}"
@@ -302,6 +325,7 @@
     - name: check to see what images have been registered with glance
       environment:
         http_proxy: ''
+        HTTP_PROXY: ''
       command: glance --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name harness --os-username harness --os-password "{{ openstack_identity_harness_password }}" image-list
       register: glance_image_check
       changed_when: false
@@ -309,6 +333,7 @@
     - name: import harnesscloud/conpaas-director image into glance if necessary
       environment:
         http_proxy: ''
+        HTTP_PROXY: ''
       shell: echo "docker save {{ item }}" | glance --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name harness --os-username harness --os-password "{{ openstack_identity_harness_password }}" image-create --name={{ item }} --is-public=true --container-format=docker --disk-format=raw
       when: -1 == glance_image_check.stdout.find("{{ item }}")
       with_items:
@@ -320,6 +345,7 @@
     - name: query glance for harnesscloud/conpaas-director image id
       environment:
         http_proxy: ''
+        HTTP_PROXY: ''
       glance_image:
         auth_url: "{{ openstack_identity_public_url }}"
         login_tenant_name: harness
@@ -333,6 +359,7 @@
     - name: query glance for harnesscloud/conpaas-worker image id
       environment:
         http_proxy: ''
+        HTTP_PROXY: ''
       glance_image:
         auth_url: "{{ openstack_identity_public_url }}"
         login_tenant_name: harness
@@ -350,6 +377,7 @@
     - name: ensure harness user has admin role
       environment:
         http_proxy: ''
+        HTTP_PROXY: ''
       keystone_user:
         endpoint: "{{ openstack_identity_admin_url }}"
         token: "{{ openstack_identity_admin_token }}"
@@ -360,6 +388,7 @@
     - name: ensure internal network is registered
       environment:
         http_proxy: ''
+        HTTP_PROXY: ''
       neutron_network:
         auth_url: "{{ openstack_identity_public_url }}"
         login_tenant_name: harness
@@ -373,6 +402,7 @@
     - name: ensure subnet internal network is registered
       environment:
         http_proxy: ''
+        HTTP_PROXY: ''
       neutron_subnet:
         auth_url: "{{ openstack_identity_public_url }}"
         login_tenant_name: harness
@@ -390,6 +420,7 @@
     - name: ensure router exists
       environment:
         http_proxy: ''
+        HTTP_PROXY: ''
       neutron_router:
         auth_url: "{{ openstack_identity_public_url }}"
         login_tenant_name: harness
@@ -402,6 +433,7 @@
     - name: ensure router has interface connected to internal network
       environment:
         http_proxy: ''
+        HTTP_PROXY: ''
       neutron_router_interface:
         auth_url: "{{ openstack_identity_public_url }}"
         login_tenant_name: harness
@@ -415,6 +447,7 @@
     - name: ensure router has external network gateway
       environment:
         http_proxy: ''
+        HTTP_PROXY: ''
       neutron_router_gateway:
         auth_url: "{{ openstack_identity_public_url }}"
         login_tenant_name: harness
@@ -437,6 +470,7 @@
     - name: add ssh keypair to nova
       environment:
         http_proxy: ''
+        HTTP_PROXY: ''
       nova_keypair:
         auth_url: "{{ openstack_identity_public_url }}"
         login_tenant_name: harness
@@ -451,6 +485,7 @@
     - name: verify existence of harness security group
       environment:
         http_proxy: ''
+        HTTP_PROXY: ''
       command: neutron --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name harness --os-username harness --os-password "{{ openstack_identity_harness_password }}" security-group-show harness-secgroup
       register: verify_secgroup
       ignore_errors: yes
@@ -459,30 +494,35 @@
     - name: create harness-secgroup security group if necessary
       environment:
         http_proxy: ''
+        HTTP_PROXY: ''
       command: neutron --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name harness --os-username harness --os-password "{{ openstack_identity_harness_password }}" security-group-create harness-secgroup
       when: verify_secgroup|failed
    
     - name: ensure that harness-secgroup allows ping
       environment:
         http_proxy: ''
+        HTTP_PROXY: ''
       command: neutron --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name harness --os-username harness --os-password "{{ openstack_identity_harness_password }}" security-group-rule-create --direction=ingress --protocol=icmp harness-secgroup
       when: verify_secgroup|failed
 
     - name: ensure that harness-secgroup allows ssh
       environment:
         http_proxy: ''
+        HTTP_PROXY: ''
       command: neutron --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name harness --os-username harness --os-password "{{ openstack_identity_harness_password }}" security-group-rule-create --direction=ingress --protocol=tcp --port-range-min=22 --port-range-max=22 harness-secgroup
       when: verify_secgroup|failed
 
     - name: ensure that harness-secgroup allows http
       environment:
         http_proxy: ''
+        HTTP_PROXY: ''
       command: neutron --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name harness --os-username harness --os-password "{{ openstack_identity_harness_password }}" security-group-rule-create --direction=ingress --protocol=tcp --port-range-min=80 --port-range-max=80 harness-secgroup
       when: verify_secgroup|failed
 
     - name: ensure that harness-secgroup allows https
       environment:
         http_proxy: ''
+        HTTP_PROXY: ''
       command: neutron --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name harness --os-username harness --os-password "{{ openstack_identity_harness_password }}" security-group-rule-create --direction=ingress --protocol=tcp --port-range-min=443 --port-range-max=443 harness-secgroup
       when: verify_secgroup|failed
 
@@ -550,6 +590,7 @@
     - name: ensure floating ip is associated with vm instance
       environment:
         http_proxy: ''
+        HTTP_PROXY: ''
       neutron_floating_ip:
         auth_url: "{{ openstack_identity_public_url }}"
         login_tenant_name: harness
