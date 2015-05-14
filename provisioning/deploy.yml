@@ -566,6 +566,9 @@
           - 56789:56789
 
     - name: create a new conpaas-admin virtual machine instance
+      environment:
+        http_proxy: ''
+        HTTP_PROXY: ''
       nova_compute:
         auth_url: "{{ openstack_identity_public_url }}"
         login_tenant_name: harness
