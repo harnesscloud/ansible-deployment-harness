@@ -645,7 +645,7 @@
     - name: print success message
       debug:
         msg: >
-             Success! The playbook has completed and the install has passed 
+             Success! The playbook has completed and the install has passed
              basic tests. The HARNESS cloud should be ready for use.
 
     - name: display CRS url
@@ -654,5 +654,5 @@
 
     - name: display ConPaaS url
       debug:
-        msg: "ConPaaS url: https://{{ harness-floating_ip.public_ip }}"
+        msg: "ConPaaS url: https://{{ harness_floating_ip.public_ip }}"
  
