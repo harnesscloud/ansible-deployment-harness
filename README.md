@@ -225,7 +225,8 @@ recommended that you add ".harness-project.eu" to this list.
 
 After the SOCKS proxy is configured in your browser you should be able to
 access the CRS and ConPaaS urls that are displayed when the playbook completes
-successfully.
+successfully. The default ConPaaS user is "test" and the default password is
+"password". Please change these values for any production deployment.
 
 Author Information
 ------------------
