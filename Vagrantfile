@@ -10,6 +10,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network :forwarded_port, guest: 443, host: 8443 
   config.vm.network :forwarded_port, guest: 8888, host: 8888 
   config.vm.network :forwarded_port, guest: 56789, host: 56789
+  config.vm.post_up_message = "HARNESS ports mapped to localhost; crs: 56789, irm-nova: 8888, conpaas: 8443"
 
   config.vm.provider :virtualbox do |v|
     v.memory = 2048

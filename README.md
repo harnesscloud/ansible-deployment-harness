@@ -9,10 +9,9 @@ Portions of this document are based on an existing howto for deploying vanilla
 OpenStack Grizzly (ref:
 https://www.grid5000.fr/mediawiki/index.php/OpenStack_Grizzly).
 
-You should make sure that you have
-reviewed the Grid5000 getting started guide (ref:
-https://www.grid5000.fr/mediawiki/index.php/Getting_Started) before proceeding
-if you have not previously worked with grid5000.
+You should make sure that you have reviewed the Grid5000 getting started guide
+(ref: https://www.grid5000.fr/mediawiki/index.php/Getting_Started) before
+proceeding if you have not previously worked with grid5000.
 
 Preparation
 -----------
@@ -105,8 +104,6 @@ so be sure to set the executable bit on this file:
 
     chmod +x inventories/g5k.sh
 
-
-
 Deployment
 ----------
 
@@ -115,7 +112,21 @@ requesting nodes from the job scheduler, then installing the base operating
 system on these nodes, preparing the nodes, and finally running the ansible 
 deployment script.
 
-### Step 1: request some nodes for the deployment from the scheduler
+### Step 0 (optional): start gnu screen to protect your session
+
+These instructions are oriented toward an interactive session, so if you follow
+the instructions in the next section and then need to disconnect for some
+reason (e.g., network outage, or you need to shut down your laptop) then you
+will lose your session, the nodes will be unreserved, and it you will have to
+start over again from step 1. To protect against this, run the "screen" command
+to protect your session. If you are ever disconnected then just log back in to
+your grid5000 site and run "screen -R" to reconnect. You should see that
+everything has continued running as though you never left. If you want to to
+disconnect without terminating your session or closing your terminal
+application, then just type "CTRL-a d" (control+a and then d) to disconnect,
+then exit or logout as you would normally. 
+
+### Step 1: request nodes for the deployment from the scheduler
 
 The OAR scheduler is complicated, and the oarsub command can take a lot of
 options depending on exactly what you want (ref:
