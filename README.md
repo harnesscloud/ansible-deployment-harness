@@ -1,6 +1,8 @@
 Ansible Deployment for HARNESS demo on grid5000
 ===============================================
 
+[![Build Status](https://buildbot.harness-project.eu/png?builder=ansible-deployment-harness-demo-g5k-runtests)](https://buildbot.harness-project.eu/builders/ansible-deployment-harness-demo-g5k-runtests) 
+
 The purpose of this ansible deployment is to configure and set up the HARNESS
 system on grid5000 for testing, experimentation, and demonstration. It is not
 intended for production use.
