@@ -184,32 +184,16 @@ As the environment within the grid5000 clusters is fairly insecure, a fair
 amount of effort has been put into isolating grid5000 from the wider internet.
 This means, for example, that nodes cannot directly access or be accessed from
 outside. Obviously, it should be possible to ssh to the root account of any
-node from the frontend machine. In order to access web services running on the
-nodes you may need to tunnel traffic over ssh.
-
-For any node running a web server; a service running on port 80 can be accessed
-through a URL that follows this scheme:
-
-    https://mynode.mysite.proxy-http.grid5000.fr/
-
-Services running with SSL on port 443 can be accessed more directly:
-
-    https://mynode.mysite.grid5000.fr/
-
-In particular, the URL for the OpenStack horizon web front-end will follow this
-scheme:
-
-    https://mynode.mysite.grid5000.fr/horizon
+node from the frontend machine. 
 
 If, while on a node, you need to download something from the internet, do not
 forget that you may need to set the http_proxy or https_proxy environment
 variables to do so, and that even then the most straightforward thing to do
 might be to use scp to copy your files to the frontend and then again to copy
 from the frontend to the nodes. *It is important to not set this variable by
-default on the controller as it can break some of the command-line clients*. In
-particular, setting the http_proxy environment variable will cause the neutron
-command to fail with a 403 error, while keystone, glance, and nova are not
-affected.
+default on the controller as it can break some of the openstack command-line
+clients*. The affected commands will fail with a 503 error, so if you see this
+error, be sure to check the http_proxy and HTTP_PROXY environment variables.
 
 You can also use easy_install or pip to install the command lines to your home 
 directory on the frontend machine, download the admin or demo .openrc files and 
@@ -223,9 +207,23 @@ https://www.grid5000.fr/mediawiki/index.php/SSH).
 
 Once this is set up correctly so that you can access a site by typing "ssh
 site.g5k" from the command line, you will be able to set up SOCKS proxy tunnels
-using the command "ssh -D PORT site.g5k". The use of ProxyCommand and SOCKS is
-beyond the scope of these instructions, but feel free to email the author about
-it.
+using the command "ssh -D PORT site.g5k". For example:
+
+    ssh -D 9999 rennes.g5k
+
+Once this is done you can go into your the network settings for your web
+browser and configure it to use a SOCKS proxy. In firefox for this example you
+would go to "Preferences", then "Advanced", then "Network" and click the
+"Settings" button in the Connection section. Then fill out SOCKS host as
+"localhost" and port as "9999". It is important to note that all network
+traffic for the web browser will now be sent through grid5000, and thus you
+should put any servers that you want to be able to connect to that are located
+outside of grid5000 in the "No proxy for:" box. In particular, it is
+recommended that you add ".harness-project.eu" to this list.
+
+After the SOCKS proxy is configured in your browser you should be able to
+access the CRS and ConPaaS urls that are displayed when the playbook completes
+successfully.
 
 Author Information
 ------------------
