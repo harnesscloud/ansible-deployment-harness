@@ -642,3 +642,17 @@
         invoke-rc.d iptables-persistent save
       when: ipt_dnat|failed
 
+    - name: print success message
+      debug:
+        msg: >
+             Success! The playbook has completed and the install has passed 
+             basic tests. The HARNESS cloud should be ready for use.
+
+    - name: display CRS url
+      debug:
+        msg: "CRS url: http://{{ ansible_fqdn }}:56789/status/"
+
+    - name: display ConPaaS url
+      debug:
+        msg: "ConPaaS url: https://{{ harness-floating_ip.public_ip }}"
+ 
