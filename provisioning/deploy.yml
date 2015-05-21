@@ -161,6 +161,8 @@
 
     - name: ensure docker client libraries are installed
       command: pip install git+https://github.com/docker/docker-py.git@1.1.0#egg=docker-py
+      args:
+        creates: /usr/local/lib/python2.7/dist-packages/docker
 
     - name: ensure docker image build directories exist
       file:
