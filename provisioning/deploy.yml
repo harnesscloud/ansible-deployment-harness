@@ -662,7 +662,7 @@
 
     - name: display CRS url
       debug:
-        msg: "CRS url: {{ harness_deployment_curl_url }}"
+        msg: "CRS url: {{ harness_deployment_crs_url }}"
 
     - name: display ConPaaS url
       debug:
