@@ -662,9 +662,9 @@
 
     - name: display CRS url
       debug:
-        msg: "CRS url: http://{{ ansible_fqdn }}:56789/status/"
+        msg: "CRS url: {{ harness_deployment_curl_url }}"
 
     - name: display ConPaaS url
       debug:
-        msg: "ConPaaS url: https://{{ harness_floating_ip.public_ip }}"
+        msg: "ConPaaS url: {{ harness_deployment_conpaas_url }}"
  

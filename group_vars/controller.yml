@@ -20,3 +20,6 @@ openstack_identity_public_url: >
 openstack_compute_cpu_allocation_ratio: 16.0
 openstack_compute_ram_allocation_ratio: 10.0
 openstack_compute_disk_allocation_ratio: 10.0
+
+harness_deployment_crs_url: "http://{{ ansible_fqdn }}:56789/status/"
+harness_deployment_conpaas_url: "https://{{ harness_floating_ip.public_ip }}"
