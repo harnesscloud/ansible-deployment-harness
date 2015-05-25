@@ -119,7 +119,7 @@ deployment script.
 These instructions are oriented toward an interactive session, so if you follow
 the instructions in the next section and then need to disconnect for some
 reason (e.g., network outage, or you need to shut down your laptop) then you
-will lose your session, the nodes will be unreserved, and it you will have to
+will lose your session, the nodes will be unreserved, and you will have to
 start over again from step 1. To protect against this, run the "screen" command
 to protect your session. If you are ever disconnected then just log back in to
 your grid5000 site and run "screen -R" to reconnect. You should see that
