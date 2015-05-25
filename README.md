@@ -175,11 +175,11 @@ following command:
 Using HARNESS on Grid5000 
 -------------------------
 
-As the environment within the grid5000 clusters is fairly insecure, a fair
-amount of effort has been put into isolating grid5000 from the wider internet.
-This means, for example, that nodes cannot directly access or be accessed from
-outside. Obviously, it should be possible to ssh to the root account of any
-node from the frontend machine. 
+As the environment within the grid5000 clusters is fairly insecure, some effort
+has been put into isolating grid5000 from the wider internet. This means, for
+example, that nodes cannot directly access or be accessed from outside.
+Obviously, it should be possible to ssh to the root account of any node from
+the frontend machine. 
 
 If, while on a node, you need to download something from the internet, do not
 forget that you may need to set the http_proxy or https_proxy environment
