@@ -133,6 +133,7 @@
         line: export http_proxy="{{ lookup('env', 'http_proxy') }}"
         regexp: export http_proxy=
         state: present
+      when: ansible_distribution == "Ubuntu"
       register: docker_http_proxy
 
     - name: ensure that docker is configured to use http_proxy
@@ -142,11 +143,13 @@
         regexp: export HTTP_PROXY=
         insertafter: export http_proxy=
         state: present
+      when: ansible_distribution == "Ubuntu"
       register: docker_big_http_proxy
 
     - name: restart docker if necessary
       command: service docker restart
-      when: docker_http_proxy|changed or docker_big_http_proxy|changed
+      when: ansible_distribution == "Ubuntu" and 
+            (docker_http_proxy|changed or docker_big_http_proxy|changed)
 
     - name: ensure that login user is in the docker group
       user:
