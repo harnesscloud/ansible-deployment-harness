@@ -323,7 +323,7 @@
         cidr: 192.168.13.0/24
         enable_dhcp: true
         gateway_ip: 192.168.13.1
-        dns_nameservers: 8.8.8.8
+        dns_nameservers: 8.8.8.8,8.8.4.4
         state: present
 
     - name: ensure router exists
