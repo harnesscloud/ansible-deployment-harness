@@ -30,3 +30,11 @@
           '{{ openstack_repository_prefix }}openstack-ansible-modules.git'
         dest: library/openstack-ansible-modules
         update: yes
+
+    - name: clone docker image repositories to local system
+      git:
+        repo: "{{ item.repo }}"
+        version: "{{ item.version }}"
+        dest: "{{ ansible_env.PWD }}/docker/{{ item.dir }}"
+        update: no
+      with_items: docker_build_images

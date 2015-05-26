@@ -55,76 +55,6 @@
   environment:
     http_proxy: "{{ lookup('env', 'http_proxy') }}"
     https_proxy: "{{ lookup('env', 'https_proxy') }}"
-  vars:
-
-    docker_binary_images:
-
-      - name: ubuntu
-        file: ubuntu-14_04.tar.xz
-        group: all
-
-      - name: debian
-        file: debian-wheezy.tar.xz
-        group: compute
-
-    docker_build_images:
-
-      - name: sequenceiq/pam
-        tag: ubuntu-14.04
-        repo: "https://github.com/sequenceiq/docker-pam.git"
-        version: HEAD 
-        dir: sequenceiq_docker-pam 
-        buildsub: ubuntu-14.04
-        group: controller
-
-      - name: harnesscloud/iaas-deployment-docker-image
-        tag: latest
-        repo: "https://github.com/harnesscloud/iaas-deployment-docker-image.git"
-        version: HEAD
-        dir: harnesscloud_iaas-deployment-docker-image 
-        buildsub: ''
-        group: controller
-
-      - name: harnesscloud/debian-cloudimage
-        tag: latest
-        repo: "https://github.com/harnesscloud/docker-debian-cloudimage.git"
-        version: fix-grid5k
-        dir: harnesscloud_docker-debian-cloudimage 
-        buildsub: ''
-        group: compute
-
-      - name: harnesscloud/conpaas-director
-        tag: latest
-        repo: "https://github.com/harnesscloud/docker-conpaas-director.git"
-        version: fix-grid5k
-        dir: harnesscloud_docker-conpaas-director 
-        buildsub: ''
-        group: compute
-
-      - name: phusion/baseimage
-        tag: latest
-        repo: "https://github.com/phusion/baseimage-docker.git"
-        version: HEAD
-        dir: phusion_baseimage-docker
-        buildsub: image
-        group: compute
-
-      - name: harnesscloud/baseimage-cloud
-        tag: latest
-        repo: "https://github.com/harnesscloud/docker-baseimage-cloud.git"
-        version: HEAD
-        dir: harnesscloud_docker-baseimage-cloud 
-        buildsub: ''
-        group: compute
-
-      - name: harnesscloud/conpaas-worker
-        tag: latest
-        repo: "https://github.com/harnesscloud/docker-conpaas-worker.git"
-        version: fix-grid5k
-        dir: harnesscloud_docker-conpaas-worker
-        buildsub: ''
-        group: compute
-
   tasks:
 
     - name: ensure that docker is configured to use http_proxy
@@ -157,10 +87,6 @@
         groups: docker
         append: yes
         state: present
-
-    #- name: ensure that pip is installed
-    #  shell: curl -s https://bootstrap.pypa.io/get-pip.py | python -
-    #         creates=/usr/local/bin/pip
 
     - name: ensure that pip packages are installed
       apt:
