@@ -1,4 +1,4 @@
-- hosts: network
+- hosts: default
   sudo: True
   tasks:
 
