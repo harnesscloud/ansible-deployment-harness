@@ -171,6 +171,7 @@
       with_items:
         - python-dev
         - python-pip
+      when: ansible_distribution == "Ubuntu"
 
     - name: ensure docker client libraries are installed
       command: pip install git+https://github.com/docker/docker-py.git@1.1.0#egg=docker-py
