@@ -138,15 +138,25 @@
         inventory_hostname in groups['{{ item.group }}']
       with_items: docker_binary_images
 
-    - name: clone docker image repositories to remote systems
-      sudo_user: "{{ ansible_ssh_user }}"
-      git:
-        repo: "{{ item.repo }}"
-        version: "{{ item.version }}"
+    - name: synchronize local repositories to remotes for docker build
+      synchronize:
+        src: "docker/{{ item.dir }}"
         dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}"
-        update: no
+        archive: no
+        checksum: yes
+        recursive: yes
       when: inventory_hostname in groups['{{ item.group }}']
       with_items: docker_build_images
+
+    #- name: clone docker image repositories to remote systems
+    #  sudo_user: "{{ ansible_ssh_user }}"
+    #  git:
+    #    repo: "{{ item.repo }}"
+    #    version: "{{ item.version }}"
+    #    dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}"
+    #    update: no
+    #  when: inventory_hostname in groups['{{ item.group }}']
+    #  with_items: docker_build_images
 
     - name: ensure that docker image builds are configured to use https_proxy
       lineinfile:
