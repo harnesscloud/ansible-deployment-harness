@@ -3,3 +3,6 @@
 private
 library/*
 roles/*
+docker/*
+!docker/debian-wheezy.tar.xz
+!docker/ubuntu-14_04.tar.xz
