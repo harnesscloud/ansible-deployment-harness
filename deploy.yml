@@ -113,6 +113,7 @@
       with_items:
         - "{{ ansible_env.PWD }}/.ansible_cache"
         - "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild"
+        - "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild-sync"
 
     - name: copy binary images to remote system
       copy:
@@ -140,6 +141,17 @@
         inventory_hostname in groups['{{ item.group }}']
       with_items: docker_binary_images
 
+    - name: synchronize local repositories to remotes for sync tracking
+      synchronize:
+        src: "docker/{{ item.dir }}"
+        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild-sync"
+        archive: no
+        checksum: yes
+        recursive: yes
+      when: inventory_hostname in groups['{{ item.group }}']
+      with_items: docker_build_images
+      register: dockerbuild_sync
+
     - name: synchronize local repositories to remotes for docker build
       synchronize:
         src: "docker/{{ item.dir }}"
@@ -147,7 +159,8 @@
         archive: no
         checksum: yes
         recursive: yes
-      when: inventory_hostname in groups['{{ item.group }}']
+      when: dockerbuild_sync|changed and 
+            inventory_hostname in groups['{{ item.group }}']
       with_items: docker_build_images
 
     #- name: clone docker image repositories to remote systems
