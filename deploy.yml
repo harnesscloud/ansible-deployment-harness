@@ -5,7 +5,7 @@
     http_proxy: "{{ lookup('env', 'http_proxy') }}"
     https_proxy: "{{ lookup('env', 'https_proxy') }}"
   roles:
-    - chrony
+    - { role: chrony, when: ansible_distribution == "Ubuntu" }
 
 
 - hosts: controller:compute
@@ -56,37 +56,6 @@
     http_proxy: "{{ lookup('env', 'http_proxy') }}"
     https_proxy: "{{ lookup('env', 'https_proxy') }}"
   tasks:
-
-    #- name: ensure that docker is configured to use http_proxy
-    #  lineinfile:
-    #    dest: /etc/default/docker
-    #    line: export http_proxy="{{ lookup('env', 'http_proxy') }}"
-    #    regexp: export http_proxy=
-    #    state: present
-    #  when: ansible_distribution == "Ubuntu"
-    #  register: docker_http_proxy
-
-    #- name: ensure that docker is configured to use HTTP_PROXY
-    #  lineinfile:
-    #    dest: /etc/default/docker
-    #    line: export HTTP_PROXY="{{ lookup('env', 'http_proxy') }}"
-    #    regexp: export HTTP_PROXY=
-    #    insertafter: export http_proxy=
-    #    state: present
-    #  when: ansible_distribution == "Ubuntu"
-    #  register: docker_big_http_proxy
-
-    #- name: restart docker if necessary
-    #  command: service docker restart
-    #  when: ansible_distribution == "Ubuntu" and 
-    #        (docker_http_proxy|changed or docker_big_http_proxy|changed)
-
-    #- name: ensure that login user is in the docker group
-    #  user:
-    #    name: "{{ ansible_ssh_user }}"
-    #    groups: docker
-    #    append: yes
-    #    state: present
 
     - name: ensure that pip packages are installed
       apt:
@@ -163,16 +132,6 @@
             inventory_hostname in groups['{{ item.group }}']
       with_items: docker_build_images
 
-    #- name: clone docker image repositories to remote systems
-    #  sudo_user: "{{ ansible_ssh_user }}"
-    #  git:
-    #    repo: "{{ item.repo }}"
-    #    version: "{{ item.version }}"
-    #    dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}"
-    #    update: no
-    #  when: inventory_hostname in groups['{{ item.group }}']
-    #  with_items: docker_build_images
-
     - name: ensure that docker image builds are configured to use http_proxy
       lineinfile:
         dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}/{{ item.buildsub }}/Dockerfile"
@@ -200,15 +159,6 @@
       when: inventory_hostname in groups['{{ item.group }}']
       with_items: docker_build_images
 
-    #- name: ensure that docker images are configured to NOT use HTTP_PROXY at runtime...
-    #  lineinfile:
-    #    dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}/{{ item.buildsub }}/Dockerfile"
-    #    line: ENV HTTP_PROXY=''
-    #    insertbefore: ^CMD
-    #    state: present
-    #  when: inventory_hostname in groups['{{ item.group }}']
-    #  with_items: docker_build_images
-
     - name: ensure that docker images are configured to NOT use https_proxy at runtime...
       lineinfile:
         dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}/{{ item.buildsub }}/Dockerfile"
@@ -217,15 +167,6 @@
         state: present
       when: inventory_hostname in groups['{{ item.group }}']
       with_items: docker_build_images
-
-    #- name: ensure that docker images are configured to NOT use HTTPS_PROXY at runtime...
-    #  lineinfile:
-    #    dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}/{{ item.buildsub }}/Dockerfile"
-    #    line: ENV HTTPS_PROXY=''
-    #    insertbefore: ^CMD
-    #    state: present
-    #  when: inventory_hostname in groups['{{ item.group }}']
-    #  with_items: docker_build_images
 
     - name: ensure docker images have been built
       environment:
