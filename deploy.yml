@@ -57,36 +57,36 @@
     https_proxy: "{{ lookup('env', 'https_proxy') }}"
   tasks:
 
-    - name: ensure that docker is configured to use http_proxy
-      lineinfile:
-        dest: /etc/default/docker
-        line: export http_proxy="{{ lookup('env', 'http_proxy') }}"
-        regexp: export http_proxy=
-        state: present
-      when: ansible_distribution == "Ubuntu"
-      register: docker_http_proxy
+    #- name: ensure that docker is configured to use http_proxy
+    #  lineinfile:
+    #    dest: /etc/default/docker
+    #    line: export http_proxy="{{ lookup('env', 'http_proxy') }}"
+    #    regexp: export http_proxy=
+    #    state: present
+    #  when: ansible_distribution == "Ubuntu"
+    #  register: docker_http_proxy
 
-    - name: ensure that docker is configured to use http_proxy
-      lineinfile:
-        dest: /etc/default/docker
-        line: export HTTP_PROXY="{{ lookup('env', 'http_proxy') }}"
-        regexp: export HTTP_PROXY=
-        insertafter: export http_proxy=
-        state: present
-      when: ansible_distribution == "Ubuntu"
-      register: docker_big_http_proxy
+    #- name: ensure that docker is configured to use HTTP_PROXY
+    #  lineinfile:
+    #    dest: /etc/default/docker
+    #    line: export HTTP_PROXY="{{ lookup('env', 'http_proxy') }}"
+    #    regexp: export HTTP_PROXY=
+    #    insertafter: export http_proxy=
+    #    state: present
+    #  when: ansible_distribution == "Ubuntu"
+    #  register: docker_big_http_proxy
 
-    - name: restart docker if necessary
-      command: service docker restart
-      when: ansible_distribution == "Ubuntu" and 
-            (docker_http_proxy|changed or docker_big_http_proxy|changed)
+    #- name: restart docker if necessary
+    #  command: service docker restart
+    #  when: ansible_distribution == "Ubuntu" and 
+    #        (docker_http_proxy|changed or docker_big_http_proxy|changed)
 
-    - name: ensure that login user is in the docker group
-      user:
-        name: "{{ ansible_ssh_user }}"
-        groups: docker
-        append: yes
-        state: present
+    #- name: ensure that login user is in the docker group
+    #  user:
+    #    name: "{{ ansible_ssh_user }}"
+    #    groups: docker
+    #    append: yes
+    #    state: present
 
     - name: ensure that pip packages are installed
       apt:
@@ -125,6 +125,7 @@
     - name: register list of docker images
       environment:
         http_proxy: ''
+        HTTP_PROXY: ''
       command: docker images
       register: docker_image_check
       changed_when: false
@@ -132,6 +133,7 @@
     - name: load binary images if necessary
       environment:
         http_proxy: ''
+        HTTP_PROXY: ''
       shell: xzcat {{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.file }} | docker load
       when: >
         -1 == docker_image_check.stdout.find("{{ item.name }}") and
@@ -223,6 +225,7 @@
         state: present
       when: inventory_hostname in groups['{{ item.group }}']
       with_items: docker_build_images
+
 
 - hosts: controller
   sudo: True
