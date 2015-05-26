@@ -141,7 +141,7 @@
     - name: synchronize local repositories to remotes for docker build
       synchronize:
         src: "docker/{{ item.dir }}"
-        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}"
+        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild"
         archive: no
         checksum: yes
         recursive: yes
