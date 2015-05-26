@@ -158,19 +158,19 @@
     #  when: inventory_hostname in groups['{{ item.group }}']
     #  with_items: docker_build_images
 
-    - name: ensure that docker image builds are configured to use https_proxy
+    - name: ensure that docker image builds are configured to use http_proxy
       lineinfile:
         dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}/{{ item.buildsub }}/Dockerfile"
-        line: ENV https_proxy={{ lookup('env', 'https_proxy') }}
+        line: ENV http_proxy={{ lookup('env', 'http_proxy') }}
         insertafter: ^MAINTAINER
         state: present
       when: inventory_hostname in groups['{{ item.group }}']
       with_items: docker_build_images
 
-    - name: ensure that docker image builds are configured to use http_proxy
+    - name: ensure that docker image builds are configured to use https_proxy
       lineinfile:
         dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}/{{ item.buildsub }}/Dockerfile"
-        line: ENV http_proxy={{ lookup('env', 'http_proxy') }}
+        line: ENV https_proxy={{ lookup('env', 'https_proxy') }}
         insertafter: ^MAINTAINER
         state: present
       when: inventory_hostname in groups['{{ item.group }}']
@@ -185,14 +185,14 @@
       when: inventory_hostname in groups['{{ item.group }}']
       with_items: docker_build_images
 
-    - name: ensure that docker images are configured to NOT use HTTP_PROXY at runtime...
-      lineinfile:
-        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}/{{ item.buildsub }}/Dockerfile"
-        line: ENV HTTP_PROXY=''
-        insertbefore: ^CMD
-        state: present
-      when: inventory_hostname in groups['{{ item.group }}']
-      with_items: docker_build_images
+    #- name: ensure that docker images are configured to NOT use HTTP_PROXY at runtime...
+    #  lineinfile:
+    #    dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}/{{ item.buildsub }}/Dockerfile"
+    #    line: ENV HTTP_PROXY=''
+    #    insertbefore: ^CMD
+    #    state: present
+    #  when: inventory_hostname in groups['{{ item.group }}']
+    #  with_items: docker_build_images
 
     - name: ensure that docker images are configured to NOT use https_proxy at runtime...
       lineinfile:
@@ -203,15 +203,14 @@
       when: inventory_hostname in groups['{{ item.group }}']
       with_items: docker_build_images
 
-    - name: ensure that docker images are configured to NOT use HTTPS_PROXY at runtime...
-      lineinfile:
-        dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}/{{ item.buildsub }}/Dockerfile"
-        line: ENV HTTPS_PROXY=''
-        insertbefore: ^CMD
-        state: present
-      when: inventory_hostname in groups['{{ item.group }}']
-      with_items: docker_build_images
-
+    #- name: ensure that docker images are configured to NOT use HTTPS_PROXY at runtime...
+    #  lineinfile:
+    #    dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}/{{ item.buildsub }}/Dockerfile"
+    #    line: ENV HTTPS_PROXY=''
+    #    insertbefore: ^CMD
+    #    state: present
+    #  when: inventory_hostname in groups['{{ item.group }}']
+    #  with_items: docker_build_images
 
     - name: ensure docker images have been built
       environment:
