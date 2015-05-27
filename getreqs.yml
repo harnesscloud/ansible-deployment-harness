@@ -37,4 +37,4 @@
         version: "{{ item.version }}"
         dest: docker/{{ item.dir }}
         update: no
-      with_items: docker_build_images
+      with_items: harness_docker_build_images

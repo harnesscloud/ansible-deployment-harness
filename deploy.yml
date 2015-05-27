@@ -86,7 +86,7 @@
       when: >
         -1 == docker_image_check.stdout.find("{{ item.name }}") and
         inventory_hostname in groups['{{ item.group }}']
-      with_items: docker_binary_images
+      with_items: harness_docker_binary_images
 
     - name: synchronize local repositories to remotes for sync tracking
       synchronize:
@@ -210,7 +210,6 @@
         - harnesscloud/baseimage-cloud
         - harnesscloud/conpaas-director
         - harnesscloud/conpaas-worker
-
 
     - name: query glance for harnesscloud/conpaas-director image id
       glance_image:
@@ -474,4 +473,3 @@
     - name: display ConPaaS url
       debug:
         msg: "ConPaaS url: {{ harness_deployment_conpaas_url }}"
- 
