@@ -1,20 +1,17 @@
 ---
 - hosts: all
-  sudo: True
   environment: harness_http_proxy_environment
   roles:
     - { role: chrony, when: ansible_distribution == "Ubuntu" }
 
 
 - hosts: controller:compute
-  sudo: True
   environment: harness_http_proxy_environment
   roles:
     - docker
 
 
 - hosts: controller
-  sudo: True
   environment: harness_http_proxy_environment
   roles:
     - mysql
@@ -27,21 +24,18 @@
 
 
 - hosts: network
-  sudo: True
   environment: harness_http_proxy_environment
   roles:
     - neutron-network
 
 
 - hosts: compute
-  sudo: True
   environment: harness_http_proxy_environment
   roles:
     - nova-compute-docker
 
 
 - hosts: controller:compute
-  sudo: True
   environment: harness_http_proxy_environment
   tasks:
 
@@ -165,7 +159,6 @@
 
 - hosts: controller
   environment: harness_no_http_proxy_environment
-  sudo: True
   tasks:
 
     - name: update admin.openrc from template
@@ -311,7 +304,7 @@
         state: present
 
     - name: create ssh keypair
-      sudo_user: "{{ ansible_ssh_user }}"
+      become_user: "{{ ansible_ssh_user }}"
       command: ssh-keygen -q -f {{ ansible_env.PWD }}/.ssh/id_rsa -P ""
                creates={{ ansible_env.PWD }}/.ssh/id_rsa
 
@@ -443,7 +436,7 @@
         port: 22
 
     - name: verify that virtual machine can be logged into via ssh
-      sudo_user: "{{ ansible_ssh_user }}"
+      become_user: "{{ ansible_ssh_user }}"
       command: ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@{{ harness_floating_ip.public_ip }} hostname
       changed_when: false
 
