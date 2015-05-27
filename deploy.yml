@@ -56,6 +56,13 @@
         creates: /usr/local/lib/python2.7/dist-packages/docker
       when: ansible_distribution == "Ubuntu"
 
+    - name: ensure that login user is in the docker group
+      user:
+        name: "{{ ansible_ssh_user }}"
+        groups: docker
+        append: yes
+        state: present
+
     - name: ensure docker image build directories exist
       file:
         path: "{{ item }}"
@@ -155,6 +162,10 @@
         state: present
       when: inventory_hostname in groups['{{ item.group }}']
       with_items: harness_docker_build_images
+      register: docker_image_build
+      until: docker_image_build|success
+      retries: 3
+      delay: 3
 
 
 - hosts: controller
