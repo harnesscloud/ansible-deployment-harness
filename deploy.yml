@@ -97,7 +97,7 @@
 
     - name: synchronize local repositories to remotes for sync tracking
       synchronize:
-        src: "docker/{{ item.dir }}"
+        src: "harness/{{ item.dir }}"
         dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild-sync"
         archive: no
         checksum: yes
@@ -108,7 +108,7 @@
 
     - name: synchronize local repositories to remotes for docker build
       synchronize:
-        src: "docker/{{ item.dir }}"
+        src: "harness/{{ item.dir }}"
         dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild"
         archive: no
         checksum: yes
