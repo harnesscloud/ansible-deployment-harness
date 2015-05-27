@@ -66,8 +66,8 @@ feature, edit ~/.ssh/config and make sure the following settings are in place
 (they may already be present):
 
     Host *
-      StrictHostKeyChecking no
-      HashKnownHosts no
+    StrictHostKeyChecking no
+    HashKnownHosts no
 
 The second thing we need to do is make sure that you can ssh from the frontend 
 to the nodes granted to you by oar without entering a password. To do this, 
@@ -92,12 +92,12 @@ https://www.Grid'5000.fr/mediawiki/index.php/SSH#SSH_key_passphrase).
 As the gitlab.harness-project.eu site is not accessible through the g5k proxy,
 use the github URL to clone the project:
 
-    git clone https://github.com/harnesscloud/ansible-deployment-harness-demo-g5k.git
+    git clone https://github.com/harnesscloud/ansible-deployment-harness.git
     
 To get the ansible roles used by this deployment, cd to the
 ansible-deployment-harness-demo-g5k directory and run the following command:
 
-    ansible-playbook -i inventories/demo.ini provisioning/getreqs.yml
+    ansible-playbook -i inventories/local.ini getreqs.yml
 
 Note that this step results in the current version of the deployment being
 installed to your account. To update your deployment it may be necessary to
@@ -117,7 +117,7 @@ Deployment
 Deploying the HARNESS platform is a multi-step process requiring first 
 requesting nodes from the job scheduler, then installing the base operating 
 system on these nodes, preparing the nodes, and finally running the ansible 
-deployment script.
+deployment playbook.
 
 ### Step 0 (optional): start gnu screen to protect your session
 
@@ -175,7 +175,7 @@ nodes.
 Change to the ansible-deployment-harness-demo-g5k directory and run the
 following command:
 
-    ansible-playbook -i inventories/g5k.sh provisioning/deploy.yml
+    ansible-playbook -i inventories/g5k.sh deploy.yml
 
 Using HARNESS on Grid'5000 
 -------------------------
@@ -229,4 +229,5 @@ successfully. The default ConPaaS user is "test" and the default password is
 Author Information
 ------------------
 
+Mark Stillwell <mark@stillwell.me>
 http://stillwell.me
