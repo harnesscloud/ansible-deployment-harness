@@ -11,7 +11,17 @@ openstack_image_endpoint_host: "{{ openstack_controller_ip }}"
 openstack_compute_endpoint_host: "{{ openstack_controller_ip }}"
 openstack_network_endpoint_host: "{{ openstack_controller_ip }}"
 
-docker_binary_images:
+harness_http_proxy_environment:
+    http_proxy: "{{ lookup('env', 'http_proxy') }}"
+    https_proxy: "{{ lookup('env', 'https_proxy') }}"
+
+harness_no_http_proxy_environment:
+    http_proxy: ''
+    HTTP_PROXY: ''
+    https_proxy: ''
+    HTTPS_PROXY: ''
+
+harness_docker_binary_images:
 
     - name: ubuntu
       file: ubuntu-14_04.tar.xz
@@ -21,7 +31,7 @@ docker_binary_images:
       file: debian-wheezy.tar.xz
       group: compute
 
-docker_build_images:
+harness_docker_build_images:
 
   - name: sequenceiq/pam
     tag: ubuntu-14.04
