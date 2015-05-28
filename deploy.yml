@@ -39,23 +39,6 @@
   environment: harness_http_proxy_environment
   tasks:
 
-    - name: ensure that pip packages are installed
-      apt:
-        pkg: "{{ item }}"
-        state: latest
-        update_cache: yes
-        cache_valid_time: 600
-      with_items:
-        - python-dev
-        - python-pip
-      when: ansible_distribution == "Ubuntu"
-
-    - name: ensure docker client libraries are installed
-      command: pip install git+https://github.com/docker/docker-py.git@1.1.0#egg=docker-py
-      args:
-        creates: /usr/local/lib/python2.7/dist-packages/docker
-      when: ansible_distribution == "Ubuntu"
-
     - name: ensure that login user is in the docker group
       user:
         name: "{{ ansible_ssh_user }}"
