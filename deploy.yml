@@ -1,4 +1,13 @@
 ---
+- hosts: localhost
+  become: False
+  sudo: False
+  gather_facts: False
+  tasks:
+
+    - debug:
+        msg: "Ansible version is {{ ansible_version }}; 1.9 is required"
+  
 - hosts: all
   environment: harness_http_proxy_environment
   roles:
