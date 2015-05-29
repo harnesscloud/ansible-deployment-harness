@@ -23,6 +23,18 @@
     - docker
 
 
+- hosts: controller:compute
+  environment: harness_http_proxy_environment
+  tasks:
+
+    - name: ensure that login user is in the docker group
+      user:
+        name: "{{ ansible_ssh_user }}"
+        groups: docker
+        append: yes
+        state: present
+
+
 - hosts: controller
   environment: harness_http_proxy_environment
   roles:
@@ -49,14 +61,11 @@
 
 - hosts: controller:compute
   environment: harness_http_proxy_environment
+  sudo: False
+  become: False
+  tags:
+    - dockerimages
   tasks:
-
-    - name: ensure that login user is in the docker group
-      user:
-        name: "{{ ansible_ssh_user }}"
-        groups: docker
-        append: yes
-        state: present
 
     - name: ensure docker image build directories exist
       file:
@@ -151,16 +160,18 @@
     - name: ensure docker images have been built
       environment: harness_no_http_proxy_environment
       docker_image:
+        docker_api_version: 1.17
         name: "{{ item.name }}"
         tag: "{{ item.tag }}"
         path: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}/{{ item.buildsub }}"
         state: present
       when: inventory_hostname in groups['{{ item.group }}']
       with_items: harness_docker_build_images
-      register: docker_image_build
-      until: docker_image_build|success
-      retries: 3
-      delay: 3
+
+#     register: docker_image_build
+#     until: docker_image_build|success
+#     retries: 3
+#     delay: 3
 
 
 - hosts: controller

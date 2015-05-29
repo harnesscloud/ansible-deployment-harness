@@ -3,5 +3,6 @@
 private
 library/*
 !library/docker.py
+!library/docker_image.py
 roles/*
 harness/*
