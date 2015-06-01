@@ -61,8 +61,6 @@
 
 - hosts: controller:compute
   environment: harness_http_proxy_environment
-  sudo: False
-  become: False
   tags:
     - dockerimages
   tasks:
