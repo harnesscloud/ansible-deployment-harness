@@ -1,7 +1,8 @@
 {
    "Hosts": {
       {% for node in groups.compute -%}
-      "{{ node }}" : "{{ hostvars[node].ansible_all_ipv4_addresses[0] }}"{% if not loop.last %},{% endif %}
+      "{{ node }}" : "{{ hostvars[node].ansible_default_ipv4.address }}"
+      {%- if not loop.last %},{% endif %}
       {%- endfor %}
    },   
    "Zones": [
