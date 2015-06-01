@@ -165,15 +165,16 @@
         state: present
       when: inventory_hostname in groups['{{ item.group }}']
       with_items: harness_docker_build_images
-
-#     register: docker_image_build
-#     until: docker_image_build|success
-#     retries: 3
-#     delay: 3
+      register: docker_image_build
+      until: docker_image_build|success
+      retries: 3
+      delay: 3
 
 
 - hosts: controller
   environment: harness_no_http_proxy_environment
+  tags:
+    - harness
   tasks:
 
     - name: update admin.openrc from template
