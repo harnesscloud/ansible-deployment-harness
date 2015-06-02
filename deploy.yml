@@ -451,6 +451,7 @@
 
     - name: wait for ssh to become available
       wait_for:
+        delay: 10
         host: "{{ harness_floating_ip.public_ip }}"
         port: 22
 
