@@ -73,9 +73,7 @@
       register: default_docker
 
     - name: restart docker if necessary
-      service:
-        name: docker
-        state: restarted
+      command: service docker restart
       when: default_docker|changed
 
     - name: ensure docker image build directories exist
