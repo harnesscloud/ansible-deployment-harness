@@ -65,6 +65,19 @@
     - dockerimages
   tasks:
 
+    - name: ensure docker is configured to use http_proxy
+      lineinfile:
+        dest: /etc/default/docker
+        line: export http_proxy="{{ lookup('env', 'http_proxy') }}"
+        state: present
+      register: default_docker
+
+    - name: restart docker if necessary
+      service:
+        name: docker
+        state: restarted
+      when: default_docker|changed
+
     - name: ensure docker image build directories exist
       file:
         path: "{{ item }}"
