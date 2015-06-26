@@ -21,25 +21,7 @@ harness_no_http_proxy_environment:
     https_proxy: ''
     HTTPS_PROXY: ''
 
-harness_docker_binary_images:
-
-    - name: ubuntu
-      file: ubuntu-14_04.tar.xz
-      group: all
-
-    - name: debian
-      file: debian-wheezy.tar.xz
-      group: compute
-
 harness_docker_build_images:
-
-  #- name: sequenceiq/pam
-  #  tag: ubuntu-14.04
-  #  repo: "https://github.com/sequenceiq/docker-pam.git"
-  #  version: HEAD 
-  #  dir: sequenceiq_docker-pam 
-  #  buildsub: ubuntu-14.04
-  #  group: controller
 
   - name: harnesscloud/iaas-deployment-docker-image
     tag: latest
@@ -49,14 +31,6 @@ harness_docker_build_images:
     buildsub: ''
     group: controller
 
-  #- name: harnesscloud/debian-cloudimage
-  #  tag: latest
-  #  repo: "https://github.com/harnesscloud/docker-debian-cloudimage.git"
-  #  version: fix-grid5k
-  #  dir: harnesscloud_docker-debian-cloudimage 
-  #  buildsub: ''
-  #  group: compute
-
   - name: harnesscloud/conpaas-director
     tag: latest
     repo: "https://github.com/harnesscloud/docker-conpaas-director.git"
@@ -65,21 +39,7 @@ harness_docker_build_images:
     buildsub: ''
     group: compute
 
-  #- name: phusion/baseimage
-  #  tag: latest
-  #  repo: "https://github.com/phusion/baseimage-docker.git"
-  #  version: HEAD
-  #  dir: phusion_baseimage-docker
-  #  buildsub: image
-  #  group: compute
-
-  #- name: harnesscloud/baseimage-cloud
-  #  tag: latest
-  #  repo: "https://github.com/harnesscloud/docker-baseimage-cloud.git"
-  #  version: HEAD
-  #  dir: harnesscloud_docker-baseimage-cloud 
-  #  buildsub: ''
-  #  group: compute
+harness_docker_pull_images:
 
   - name: harnesscloud/conpaas-worker
     tag: latest
@@ -88,5 +48,3 @@ harness_docker_build_images:
     dir: harnesscloud_docker-conpaas-worker
     buildsub: ''
     group: compute
-
-

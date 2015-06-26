@@ -76,6 +76,14 @@
       command: service docker restart
       when: default_docker|changed
 
+    - name: ensure docker pull images have been pulled
+      environment: harness_no_http_proxy_environment
+      command: docker pull "{{ item.name }}:{{ item.tag }}"
+      when: inventory_hostname in groups['{{ item.group }}']
+      with_items: harness_docker_pull_images
+      register: docker_image_pull
+      changed_when: not docker_image_pull.stdout.find("Image is up to date")
+
     - name: ensure docker image build directories exist
       file:
         path: "{{ item }}"
@@ -85,28 +93,6 @@
         - "{{ ansible_env.PWD }}/.ansible_cache"
         - "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild"
         - "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild-sync"
-
-    #- name: copy binary images to remote system
-    #  copy:
-    #    src: docker/{{ item.file }}
-    #    dest: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/"
-    #    owner: "{{ ansible_ssh_user }}"
-    #  when: inventory_hostname in groups['{{ item.group }}']
-    #  with_items: harness_docker_binary_images
-
-    #- name: register list of docker images
-    #  environment: harness_no_http_proxy_environment
-    #  command: docker images
-    #  register: docker_image_check
-    #  changed_when: false
-
-    #- name: load binary images if necessary
-    #  environment: harness_no_http_proxy_environment
-    #  shell: xzcat {{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.file }} | docker load
-    #  when: >
-    #    -1 == docker_image_check.stdout.find("{{ item.name }}") and
-    #    inventory_hostname in groups['{{ item.group }}']
-    #  with_items: harness_docker_binary_images
 
     - name: synchronize local repositories to remotes for sync tracking
       synchronize:
@@ -166,7 +152,7 @@
       when: inventory_hostname in groups['{{ item.group }}']
       with_items: harness_docker_build_images
 
-    - name: ensure docker images have been built
+    - name: ensure docker build images have been built
       environment: harness_no_http_proxy_environment
       docker_image:
         docker_api_version: 1.17
