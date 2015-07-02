@@ -32,6 +32,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       "compute" => ["default"]
     }
     ansible.extra_vars = {
+      openstack_controller_ip: "10.1.0.2",
       openstack_network_external_device: "eth1",
       openstack_network_external_gateway: "10.1.0.2",
       harness_deployment_crs_url: "http://localhost:56789/status/",
