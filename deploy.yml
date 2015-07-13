@@ -396,8 +396,7 @@
       docker:
         name: harness-iaas-services
         image: harnesscloud/iaas-deployment-docker-image
-        tag: latest
-        pull: missing
+        docker_api_version: 1.18
         env:
           main_PASSWORD: "{{ openstack_identity_harness_password }}"
           main_NOVA_ENDPOINT: "{{ openstack_compute_endpoint_host }}:5000"
