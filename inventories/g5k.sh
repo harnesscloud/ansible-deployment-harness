@@ -1,11 +1,14 @@
 #!/bin/bash
 
-if [ "$1" = "--host" ] || [ -z "$OAR_NODE_FILE" ]; then
+nodefiles=$*
+[ -z "$nodefiles" ] && nodefiles=$OAR_NODE_FILE
+
+if [ "$1" = "--host" ] || [ -z "$nodefiles" ]; then
     echo "{}"
     exit 0
 fi
 
-nodes=($(sort -uV $OAR_NODE_FILE))
+nodes=($(for file in $nodefiles; do sort -uV $file; done))
 
 if [ ${#nodes[@]} -lt 2 ]; then
     echo "{}"
