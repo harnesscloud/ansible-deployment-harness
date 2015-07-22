@@ -43,5 +43,8 @@ harness_docker_pull_images:
 
   - name: harnesscloud/conpaas-worker
     tag: latest
-    repo: "https://github.com/harnesscloud/docker-conpaas-worker.git"
+    group: compute
+
+  - name: harnesscloud/baseimage-cloud
+    tag: latest
     group: compute
