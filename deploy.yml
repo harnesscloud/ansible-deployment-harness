@@ -431,6 +431,7 @@
           export IP_PREFIX=192.168.13.
           export CRS_URL=http://{{ openstack_controller_ip }}:56789
           export IMAGE_ID=harnesscloud/conpaas-worker
+        availability_zone: 'host:{{ hostvars[groups.compute[0]].ansible_hostname }}'
 
     - name: ensure floating ip is associated with vm instance
       neutron_floating_ip:
