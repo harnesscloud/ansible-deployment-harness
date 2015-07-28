@@ -169,6 +169,11 @@
       delay: 3
 
 
+- hosts: all
+  gather_facts: True
+  tags:
+    - harness
+
 - hosts: controller
   environment: harness_no_http_proxy_environment
   tags:
