@@ -71,6 +71,7 @@
         line: export http_proxy="{{ lookup('env', 'http_proxy') }}"
         state: present
       register: default_docker
+      when: ansible_distribution == 'Ubuntu'
 
     - name: restart docker if necessary
       command: service docker restart
@@ -167,10 +168,6 @@
       retries: 3
       delay: 3
 
-
-- hosts: all
-  tags:
-    - harness
 
 - hosts: controller
   environment: harness_no_http_proxy_environment
