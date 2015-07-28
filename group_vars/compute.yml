@@ -1,5 +1,8 @@
 ---
 #openstack_nova_compute_nova_docker_package: >
 #  git+https://github.com/marklee77/nova-docker@harness-demo#egg=novadocker
+#openstack_nova_compute_nova_docker_package: >
+#  git+https://github.com/marklee77/nova-docker@fix-docker-1.7.0#egg=novadocker
+
 openstack_nova_compute_nova_docker_package: >
-  git+https://github.com/marklee77/nova-docker@fix-docker-1.7.0#egg=novadocker
+  git+https://github.com/marklee77/nova-docker@harness-demo-fixnetwork#egg=novadocker
