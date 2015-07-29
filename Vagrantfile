@@ -36,7 +36,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       openstack_network_external_device: "eth1",
       openstack_network_external_gateway: "10.1.0.2",
       harness_deployment_crs_url: "http://localhost:56789/status/",
-      harness_deployment_conpaas_url: "https://localhost:8443/"
+      harness_deployment_conpaas_url: "https://localhost:8443/",
+      openstack_compute_node_ip:
+        "{{ ansible_all_ipv4_addresses|ipaddr('10.1.0.0/16')|first }}",
+      openstack_network_local_ip:
+        "{{ ansible_all_ipv4_addresses|ipaddr('10.1.0.0/16')|first }}"
     }
   end
 
