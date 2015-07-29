@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "$1" = "--host" ] || [ -z "$nodefiles" ]; then
+if [ "$1" = "--host" ]; then
     echo "{}"
     exit 0
 fi
