@@ -383,16 +383,16 @@
       changed_when: False
       register: cpu_mhz
 
-    - name: update harness-iaas configuration files from templates
-      template:
-        src: templates/etc/harness-iaas/{{ item }}
-        dest: /etc/harness-iaas/{{ item }}
-        owner: root
-        group: root
-        mode: 0600
-      with_items:
-        - compute_list
-        - crs.constraints
+    #- name: update harness-iaas configuration files from templates
+    #  template:
+    #    src: templates/etc/harness-iaas/{{ item }}
+    #    dest: /etc/harness-iaas/{{ item }}
+    #    owner: root
+    #    group: root
+    #    mode: 0600
+    #  with_items:
+    #    - compute_list
+    #    - crs.constraints
 
     - name: ensure that harness iaas service is started
       docker:
