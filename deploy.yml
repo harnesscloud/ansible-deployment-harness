@@ -470,17 +470,17 @@
       with_items:
         - iptables-persistent
 
-    - name: check to see if dnat rule is present
-      command: iptables -t nat -C PREROUTING -p tcp --dport 443 -j DNAT --to {{ harness_floating_ip.public_ip }}
-      register: ipt_dnat
-      ignore_errors: yes
-      changed_when: false
+    #- name: check to see if dnat rule is present
+    #  command: iptables -t nat -C PREROUTING -p tcp --dport 443 -j DNAT --to {{ harness_floating_ip.public_ip }}
+    #  register: ipt_dnat
+    #  ignore_errors: yes
+    #  changed_when: false
 
-    - name: add dnat rule if not present
-      shell: >
-        iptables -t nat -A PREROUTING -p tcp --dport 443 -j DNAT --to {{ harness_floating_ip.public_ip }} &&
-        invoke-rc.d iptables-persistent save
-      when: ipt_dnat|failed
+    #- name: add dnat rule if not present
+    #  shell: >
+    #    iptables -t nat -A PREROUTING -p tcp --dport 443 -j DNAT --to {{ harness_floating_ip.public_ip }} &&
+    #    invoke-rc.d iptables-persistent save
+    #  when: ipt_dnat|failed
 
     - name: print success message
       debug:
