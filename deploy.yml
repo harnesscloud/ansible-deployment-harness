@@ -407,7 +407,7 @@
           overcommit_CPU_RATIO: "{{ openstack_compute_cpu_allocation_ratio|int }}"
           overcommit_MEM_RATIO: "{{ openstack_compute_ram_allocation_ratio|int }}"
           overcommit_DISK_RATIO: "{{ openstack_compute_disk_allocation_ratio|int }}"
-        volumes: /etc/harness-iaas:/etc/harness-iaas:ro
+        #volumes: /etc/harness-iaas:/etc/harness-iaas:ro
         ports:
           - 8888:8888
           - 56789:56789
