@@ -1,13 +1,12 @@
 #!/bin/bash
 
-nodefiles=$*
-[ -z "$nodefiles" ] && nodefiles=$OAR_NODE_FILE
-
 if [ "$1" = "--host" ] || [ -z "$nodefiles" ]; then
     echo "{}"
     exit 0
 fi
 
+# FIXME: come up with a way to make more inventories...
+nodefiles=$OAR_NODE_FILE
 nodes=($(for file in $nodefiles; do sort -uV $file; done))
 
 if [ ${#nodes[@]} -lt 2 ]; then
