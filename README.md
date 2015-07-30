@@ -46,7 +46,7 @@ Assuming that you have completed step 1 correctly and reloaded your environment
 (source ~/.profile or logout and then log in again), you should be able to
 install ansible to your home directory with the following command:
 
-    easy_install --user ansible
+    easy_install --user ansible netaddr
 
 After this step is completed make sure that you can run ansible:
 
