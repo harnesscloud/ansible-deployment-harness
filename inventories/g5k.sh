@@ -5,9 +5,9 @@ if [ "$1" = "--host" ]; then
     exit 0
 fi
 
-# FIXME: come up with a way to make more inventories...
-nodefiles=$OAR_NODE_FILE
-nodes=($(for file in $nodefiles; do sort -uV $file; done))
+nodefile=$OAR_NODE_FILE
+[ -f "harness-nodes.txt" ] && nodefile="harness-nodes.txt"
+nodes=($(sort -uV $nodefile))
 
 if [ ${#nodes[@]} -lt 2 ]; then
     echo "{}"
