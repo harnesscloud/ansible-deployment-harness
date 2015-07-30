@@ -156,7 +156,7 @@
     - name: ensure docker build images have been built
       environment: harness_no_http_proxy_environment
       docker_image:
-        docker_api_version: 1.17
+        docker_api_version: '1.18'
         name: "{{ item.name }}"
         tag: "{{ item.tag }}"
         path: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/{{ item.dir }}/{{ item.buildsub }}"
@@ -398,7 +398,7 @@
       docker:
         name: harness-iaas-services
         image: harnesscloud/iaas-deployment-docker-image
-        docker_api_version: 1.18
+        docker_api_version: '1.18'
         env:
           main_PASSWORD: "{{ openstack_identity_harness_password }}"
           main_NOVA_ENDPOINT: "{{ openstack_compute_endpoint_host }}:5000"
