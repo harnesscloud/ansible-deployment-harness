@@ -449,11 +449,10 @@
     - name: ping harness virtual machine
       command: ping -c 4 {{ harness_floating_ip.public_ip }}
       changed_when: false
-
-      #register: ping_haress_vm
-      #until: ping_harness_vm|success
-      #retries: 5
-      #delay: 5
+      register: ping_haress_vm
+      until: ping_harness_vm|success
+      retries: 5
+      delay: 5
 
     - name: wait for ssh to become available
       wait_for:
