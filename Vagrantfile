@@ -15,6 +15,33 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
   end
 
+  config.vm.define "compute-002", autostart: false do |m|
+    m.vm.box = "ubuntu/trusty64"
+    m.vm.hostname = "compute-002"
+    m.vm.network :private_network, ip: "10.1.0.4", :netmask => "255.255.0.0"
+    m.vm.provider :virtualbox do |v|
+      v.memory = 1280
+    end
+  end
+
+  config.vm.define "compute-003", autostart: false do |m|
+    m.vm.box = "ubuntu/trusty64"
+    m.vm.hostname = "compute-003"
+    m.vm.network :private_network, ip: "10.1.0.5", :netmask => "255.255.0.0"
+    m.vm.provider :virtualbox do |v|
+      v.memory = 1280
+    end
+  end
+
+  config.vm.define "compute-004", autostart: false do |m|
+    m.vm.box = "ubuntu/trusty64"
+    m.vm.hostname = "compute-004"
+    m.vm.network :private_network, ip: "10.1.0.6", :netmask => "255.255.0.0"
+    m.vm.provider :virtualbox do |v|
+      v.memory = 1280
+    end
+  end
+
   config.vm.define "controller", primary: true do |m|
     m.vm.box = "ubuntu/trusty64"
     m.vm.hostname = "controller"
@@ -43,7 +70,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       ansible.groups = {
         "controller" => ["controller"],
         "network" => ["controller"],
-        "compute" => ["controller", "compute-001"]
+        "compute" => ["controller", "compute-001", "compute-002", "compute-003", 
+                      "compute-004"]
       }
       ansible.extra_vars = {
         openstack_controller_ip: "10.1.0.2",
