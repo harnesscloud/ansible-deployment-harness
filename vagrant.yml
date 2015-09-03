@@ -1,4 +1,4 @@
-- hosts: default
+- hosts: controller
   sudo: True
   tasks:
 
