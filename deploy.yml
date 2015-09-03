@@ -47,6 +47,17 @@
     - horizon
 
 
+#- hosts: network
+#  environment: harness_http_proxy_environment
+#  tasks:
+
+#    - name: enable net.ipv4.ip_no_pmtu_disc in sysctl
+#      sysctl:
+#        name: net.ipv4.ip_no_pmtu_disc
+#        value: "1"
+#        state: present
+
+
 - hosts: network
   environment: harness_http_proxy_environment
   roles:
