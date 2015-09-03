@@ -83,7 +83,7 @@
       when: inventory_hostname in groups['{{ item.group }}']
       with_items: harness_docker_pull_images
       register: docker_image_pull
-      changed_when: not docker_image_pull.stdout.find("Image is up to date")
+      changed_when: -1 != docker_image_pull.stdout.find("Downloaded newer image")
 
     - name: ensure docker image build directories exist
       file:
