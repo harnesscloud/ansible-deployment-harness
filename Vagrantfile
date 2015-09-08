@@ -7,7 +7,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.ssh.insert_key = false
 
   config.vm.define "compute-001", autostart: false do |m|
-    m.vm.box = "ubuntu/trusty64"
+    m.vm.box = "boxcutter/centos64"
     m.vm.hostname = "compute-001"
     m.vm.network :private_network, ip: "10.1.0.3", :netmask => "255.255.0.0"
     m.vm.provider :virtualbox do |v|
