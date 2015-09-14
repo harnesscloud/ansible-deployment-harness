@@ -28,7 +28,7 @@ harness_docker_build_images:
   - name: harnesscloud/iaas-deployment-docker-image
     tag: latest
     repo: "https://github.com/harnesscloud/iaas-deployment-docker-image.git"
-    version: IMP
+    version: HEAD 
     dir: harnesscloud_iaas-deployment-docker-image 
     buildsub: ''
     group: controller
