@@ -28,7 +28,7 @@ harness_docker_build_images:
   - name: harnesscloud/iaas-deployment-docker-image
     tag: latest
     repo: "https://github.com/harnesscloud/iaas-deployment-docker-image.git"
-    version: HEAD 
+    version: HEAD
     dir: harnesscloud_iaas-deployment-docker-image 
     buildsub: ''
     group: controller
@@ -64,14 +64,6 @@ harness_docker_build_images:
     dir: harnesscloud_xtreemfs-docker
     buildsub: xtreemfs-harness-osd
     group: controller
-
-  #- name: xtreemfs/xtreemfs-client
-  #  tag: latest
-  #  repo: "https://github.com/harnesscloud/xtreemfs-client-docker.git"
-  #  version: HEAD
-  #  dir: harnesscloud_xtreemfs-client-docker
-  #  buildsub: ''
-  #  group: controller
 
 harness_docker_pull_images:
 
