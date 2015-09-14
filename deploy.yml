@@ -380,7 +380,7 @@
       command: neutron --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name harness --os-username harness --os-password "{{ openstack_identity_harness_password }}" security-group-rule-create --direction=ingress --protocol=tcp --port-range-min=443 --port-range-max=443 harness-secgroup
       when: verify_secgroup|failed
 
-    - name: ensure that harness iaas service is started
+    - name: ensure that harness iaas services are running
       docker:
         name: harness-iaas-services
         image: harnesscloud/iaas-deployment-docker-image
@@ -396,6 +396,7 @@
         ports:
           - 8888:8888
           - 56789:56789
+        state: started
 
     - name: ensure that /xtreemfs_data directory exists
       file:
@@ -417,6 +418,31 @@
         - mrcconfig.properties
         - osdconfig.properties
         - schedulerconfig.properties
+
+    - name: ensure that xtreemfs-osd service is running
+      docker:
+        name: xtreemfs-harness-osd
+        image: xtreemfs/xtreemfs-harness-osd
+        docker_api_version: '1.18'
+        ports:
+          - 32640:32640
+        volumes:
+          - /xtreemfs_data:/xtreemfs_data:rw
+        state: started
+
+    - name: ensure that xtreemfs-manager service is running
+      docker:
+        name: xtreemfs-harness-manager
+        image: xtreemfs/xtreemfs-harness-manager
+        docker_api_version: '1.18'
+        ports:
+          - 30080:30080
+          - 32636:32636
+          - 32638:32638
+          - 32642:32642
+        volumes:
+          - /xtreemfs_data:/xtreemfs_data:rw
+        state: started
 
     - name: create a new conpaas-admin virtual machine instance
       nova_compute:
