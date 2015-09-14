@@ -76,6 +76,6 @@ harness_docker_pull_images:
     tag: latest
     group: compute
 
-  #- name: harnesscloud/xtreemfs-client
-  #  tag: latest
-  #  group: controller
+  - name: harnesscloud/xtreemfs-client
+    tag: latest
+    group: controller
