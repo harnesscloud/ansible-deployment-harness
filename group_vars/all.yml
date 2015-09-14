@@ -65,6 +65,13 @@ harness_docker_build_images:
     buildsub: xtreemfs-harness-osd
     group: controller
 
+  #- name: xtreemfs/xtreemfs-client
+  #  tag: latest
+  #  repo: "https://github.com/harnesscloud/xtreemfs-client-docker.git"
+  #  version: HEAD
+  #  dir: harnesscloud_xtreemfs-client-docker
+  #  buildsub: ''
+  #  group: controller
 
 harness_docker_pull_images:
 
@@ -75,7 +82,3 @@ harness_docker_pull_images:
   - name: harnesscloud/baseimage-cloud
     tag: latest
     group: compute
-
-  - name: harnesscloud/xtreemfs-client
-    tag: latest
-    group: controller
