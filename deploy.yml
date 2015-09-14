@@ -397,6 +397,27 @@
           - 8888:8888
           - 56789:56789
 
+    - name: ensure that /xtreemfs_data directory exists
+      file:
+        path: /xtreemfs_data
+        owner: root
+        group: root
+        mode: 0755
+        state: directory
+
+    - name: ensure that harness xtreemfs configuration is updated from templates
+      template:
+        src: templates/xtreemfs_data/{{ item }}
+        dest: /xtreemfs_data/{{ item }}
+        owner: root
+        group: root
+        mode: 0644
+      with_items:
+        - dirconfig.properties
+        - mrcconfig.properties
+        - osdconfig.properties
+        - schedulerconfig.properties
+
     - name: create a new conpaas-admin virtual machine instance
       nova_compute:
         auth_url: "{{ openstack_identity_public_url }}"
