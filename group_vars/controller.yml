@@ -28,5 +28,5 @@ openstack_compute_quota_instances: -1
 openstack_compute_quota_key_pairs: -1
 openstack_compute_quota_ram: -1
 
-harness_deployment_crs_url: "http://{{ ansible_fqdn }}:56789/status/"
+harness_deployment_crs_url: "http://{{ ansible_fqdn }}:56789"
 harness_deployment_conpaas_url: "https://{{ harness_floating_ip.public_ip }}"
