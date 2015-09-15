@@ -415,6 +415,7 @@
         mode: 0644
       with_items:
         - dirconfig.properties
+        - irm.properties
         - mrcconfig.properties
         - osdconfig.properties
         - schedulerconfig.properties
