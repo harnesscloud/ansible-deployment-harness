@@ -419,7 +419,7 @@
         - mrcconfig.properties
         - osdconfig.properties
         - schedulerconfig.properties
-        - scheduler.osd_capaibities
+        - scheduler.osd_capabilities
 
     - name: ensure that xtreemfs-osd service is running
       docker:
