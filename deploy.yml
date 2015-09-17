@@ -426,6 +426,8 @@
         name: xtreemfs-harness-osd
         image: xtreemfs/xtreemfs-harness-osd
         docker_api_version: '1.18'
+        expose:
+          - 32640
         ports:
           - 32640:32640
         volumes:
@@ -437,6 +439,11 @@
         name: xtreemfs-harness-manager
         image: xtreemfs/xtreemfs-harness-manager
         docker_api_version: '1.18'
+        expose:
+          - 30080
+          - 32636
+          - 32638
+          - 32642
         ports:
           - 30080:30080
           - 32636:32636
