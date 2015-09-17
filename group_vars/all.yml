@@ -41,29 +41,29 @@ harness_docker_build_images:
     buildsub: ''
     group: compute
 
-  - name: xtreemfs/xtreemfs-harness-common
-    tag: latest
-    repo: "https://github.com/harnesscloud/xtreemfs-docker.git"
-    version: HEAD
-    dir: harnesscloud_xtreemfs-docker
-    buildsub: xtreemfs-harness-common
-    group: controller
+  #- name: xtreemfs/xtreemfs-harness-common
+  #  tag: latest
+  #  repo: "https://github.com/harnesscloud/xtreemfs-docker.git"
+  #  version: HEAD
+  #  dir: harnesscloud_xtreemfs-docker
+  #  buildsub: xtreemfs-harness-common
+  #  group: controller
 
-  - name: xtreemfs/xtreemfs-harness-manager
-    tag: latest
-    repo: "https://github.com/harnesscloud/xtreemfs-docker.git"
-    version: HEAD
-    dir: harnesscloud_xtreemfs-docker
-    buildsub: xtreemfs-harness-manager
-    group: controller
+  #- name: xtreemfs/xtreemfs-harness-manager
+  #  tag: latest
+  #  repo: "https://github.com/harnesscloud/xtreemfs-docker.git"
+  #  version: HEAD
+  #  dir: harnesscloud_xtreemfs-docker
+  #  buildsub: xtreemfs-harness-manager
+  #  group: controller
 
-  - name: xtreemfs/xtreemfs-harness-osd
-    tag: latest
-    repo: "https://github.com/harnesscloud/xtreemfs-docker.git"
-    version: HEAD
-    dir: harnesscloud_xtreemfs-docker
-    buildsub: xtreemfs-harness-osd
-    group: controller
+  #- name: xtreemfs/xtreemfs-harness-osd
+  #  tag: latest
+  #  repo: "https://github.com/harnesscloud/xtreemfs-docker.git"
+  #  version: HEAD
+  #  dir: harnesscloud_xtreemfs-docker
+  #  buildsub: xtreemfs-harness-osd
+  #  group: controller
 
 harness_docker_pull_images:
 
@@ -74,3 +74,12 @@ harness_docker_pull_images:
   - name: harnesscloud/baseimage-cloud
     tag: latest
     group: compute
+
+  - name: xtreemfs/xtreemfs-harness-manager
+    tag: latest
+    group: controller
+
+  - name: xtreemfs/xtreemfs-harness-osd
+    tag: latest
+    group: controller
+
