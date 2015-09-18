@@ -67,11 +67,11 @@ harness_docker_build_images:
 
 harness_docker_pull_images:
 
-  - name: harnesscloud/conpaas-worker
+  - name: harnesscloud/baseimage-cloud
     tag: latest
     group: compute
 
-  - name: harnesscloud/baseimage-cloud
+  - name: harnesscloud/conpaas-worker
     tag: latest
     group: compute
 
@@ -82,4 +82,3 @@ harness_docker_pull_images:
   - name: xtreemfs/xtreemfs-harness-osd
     tag: latest
     group: controller
-
