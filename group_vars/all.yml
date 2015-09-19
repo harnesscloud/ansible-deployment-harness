@@ -48,6 +48,7 @@ harness_docker_build_images:
   #  dir: harnesscloud_xtreemfs-docker
   #  buildsub: xtreemfs-harness-common
   #  group: controller
+<<<<<<< HEAD
 
   #- name: xtreemfs/xtreemfs-harness-manager
   #  tag: latest
@@ -58,6 +59,22 @@ harness_docker_build_images:
   #  group: controller
 
   #- name: xtreemfs/xtreemfs-harness-osd
+=======
+
+  #- name: xtreemfs/xtreemfs-harness-manager
+>>>>>>> xtreemfs
+  #  tag: latest
+  #  repo: "https://github.com/harnesscloud/xtreemfs-docker.git"
+  #  version: HEAD
+  #  dir: harnesscloud_xtreemfs-docker
+<<<<<<< HEAD
+  #  buildsub: xtreemfs-harness-osd
+=======
+  #  buildsub: xtreemfs-harness-manager
+>>>>>>> xtreemfs
+  #  group: controller
+
+  #- name: xtreemfs/xtreemfs-harness-osd
   #  tag: latest
   #  repo: "https://github.com/harnesscloud/xtreemfs-docker.git"
   #  version: HEAD
@@ -65,13 +82,23 @@ harness_docker_build_images:
   #  buildsub: xtreemfs-harness-osd
   #  group: controller
 
-
 harness_docker_pull_images:
-
-  - name: harnesscloud/conpaas-worker
-    tag: latest
-    group: compute
 
   - name: harnesscloud/baseimage-cloud
     tag: latest
     group: compute
+
+  - name: harnesscloud/conpaas-worker
+    tag: latest
+    group: compute
+<<<<<<< HEAD
+=======
+
+  - name: xtreemfs/xtreemfs-harness-manager
+    tag: latest
+    group: controller
+
+  - name: xtreemfs/xtreemfs-harness-osd
+    tag: latest
+    group: controller
+>>>>>>> xtreemfs

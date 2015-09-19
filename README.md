@@ -7,9 +7,11 @@ The purpose of this ansible deployment is to configure and set up the HARNESS
 system on various target platforms, including vagrant-provisioned virtual
 machines and Grid'5000 for testing, experimentation, and demonstration.
 
-In order to try out HARNESS within a virtual machine, simply check out this 
-project, cd into the root directory of the project, and run the command 
-"vagrant up".
+In order to try out HARNESS within a virtual machine, you need to have Git,
+VirtualBox, Vagrant, Ansible, and the python netaddr library set up and
+functioning correcly on your computer. If these preconditions are met, then you
+should be able to simply check out this project, cd into the root directory,
+and run the command "vagrant up". 
 
 More detailed instructions are provided for deploying HARNESS on to Grid'5000.
 Portions of this document are based on an existing howto for deploying vanilla
