@@ -184,6 +184,15 @@
   environment: harness_no_http_proxy_environment
   tasks:
 
+    - name: ensure required packages for hresmonagent are installed
+      apt:
+        pkg: "{{ item }}"
+        state: latest
+        update_cache: yes
+        cache_valid_time: 600
+      with_items:
+        - python-bottle
+ 
     - name: clone hresmonagent repository
       git:
         repo: https://github.com/harnesscloud/hresmonagent.git
