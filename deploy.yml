@@ -180,10 +180,22 @@
       delay: 3
 
 
+- hosts: compute
+  environment: harness_no_http_proxy_environment
+  tasks:
+
+    - name: clone hresmonagent repository
+      git:
+        repo: https://github.com/harnesscloud/hresmonagent.git
+        dest: /hresmonagent
+        update: no
+
+
 - hosts: all
   gather_facts: True
   tags:
     - harness
+
 
 - hosts: controller
   environment: harness_no_http_proxy_environment
