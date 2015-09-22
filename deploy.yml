@@ -415,7 +415,8 @@
           overcommit_MEM_RATIO: "{{ openstack_compute_ram_allocation_ratio|int }}"
           overcommit_DISK_RATIO: "{{ openstack_compute_disk_allocation_ratio|int }}"
         ports:
-          - 8888:8888
+          - 7075:7075
+          - 8889:8889
           - 56789:56789
         state: started
 
