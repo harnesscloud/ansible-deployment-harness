@@ -180,10 +180,31 @@
       delay: 3
 
 
+- hosts: compute
+  environment: harness_no_http_proxy_environment
+  tasks:
+
+    - name: ensure required packages for hresmonagent are installed
+      apt:
+        pkg: "{{ item }}"
+        state: latest
+        update_cache: yes
+        cache_valid_time: 600
+      with_items:
+        - python-bottle
+ 
+    - name: clone hresmonagent repository
+      git:
+        repo: https://github.com/harnesscloud/hresmonagent.git
+        dest: /hresmonagent
+        update: no
+
+
 - hosts: all
   gather_facts: True
   tags:
     - harness
+
 
 - hosts: controller
   environment: harness_no_http_proxy_environment
@@ -396,6 +417,61 @@
         ports:
           - 8888:8888
           - 56789:56789
+        state: started
+
+    - name: ensure that /xtreemfs_data directory exists
+      file:
+        path: /xtreemfs_data
+        owner: root
+        group: root
+        mode: 0755
+        state: directory
+
+    - name: ensure that harness xtreemfs configuration is updated from templates
+      template:
+        src: templates/xtreemfs_data/{{ item }}
+        dest: /xtreemfs_data/{{ item }}
+        owner: root
+        group: root
+        mode: 0644
+      with_items:
+        - dirconfig.properties
+        - irm.properties
+        - mrcconfig.properties
+        - osdconfig.properties
+        - schedulerconfig.properties
+        - scheduler.osd_capabilities
+
+    - name: ensure that xtreemfs-osd service is running
+      docker:
+        name: xtreemfs-harness-osd
+        image: xtreemfs/xtreemfs-harness-osd
+        docker_api_version: '1.18'
+        expose:
+          - 32640
+        ports:
+          - 32640:32640
+        volumes:
+          - /xtreemfs_data:/xtreemfs_data:rw
+        state: started
+
+    - name: ensure that xtreemfs-manager service is running
+      docker:
+        name: xtreemfs-harness-manager
+        image: xtreemfs/xtreemfs-harness-manager
+        docker_api_version: '1.18'
+        expose:
+          - 30080
+          - 32636
+          - 32638
+          - 32642
+        ports:
+          - 30080:30080
+          - 32636:32636
+          - 32638:32638
+          - 32642:32642
+        volumes:
+          - /xtreemfs_data:/xtreemfs_data:rw
         state: started
 
     - name: create a new conpaas-admin virtual machine instance
