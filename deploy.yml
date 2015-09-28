@@ -181,7 +181,7 @@
 
 
 - hosts: compute
-  environment: harness_no_http_proxy_environment
+  environment: harness_http_proxy_environment
   tasks:
 
     - name: ensure required packages for hresmonagent are installed
