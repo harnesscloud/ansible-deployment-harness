@@ -42,9 +42,9 @@
         name: /var/lib/docker
         src: /tmp/docker
         fstype: none
-        opts: rw,bind 
+        opts: rw,bind
         state: mounted
-        
+
     - name: ensure that docker is started
       service:
         name: docker
