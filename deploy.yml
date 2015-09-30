@@ -29,9 +29,7 @@
   tasks:
 
     - name: ensure that docker is stopped
-      service:
-        name: docker
-        state: stopped
+      command: service docker stop
 
     - name: ensure that /var/lib/docker has been moved to /tmp/docker
       command: mv /var/lib/docker /tmp/docker
@@ -46,9 +44,7 @@
         state: mounted
 
     - name: ensure that docker is started
-      service:
-        name: docker
-        state: started
+      command: service docker start
 
 - hosts: controller:compute
   environment: harness_http_proxy_environment
