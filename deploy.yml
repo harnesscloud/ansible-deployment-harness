@@ -1,4 +1,15 @@
 ---
+# g5k specific change because of problems with sources.list
+- hosts: all
+  tasks:
+    - name: update /etc/apt/sources.list from template
+      template:
+        src: templates/etc/apt/sources.list
+        dest: /etc/apt/sources.list
+        owner: root
+        group: root
+        mode: 0644
+
 - hosts: localhost
   become: False
   sudo: False
