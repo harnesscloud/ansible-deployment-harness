@@ -2,6 +2,8 @@ Ansible Deployment for HARNESS
 ==============================
 
 [![Build Status](https://buildbot.harness-project.eu/png?builder=ansible-deployment-harness-runtests)](https://buildbot.harness-project.eu/builders/ansible-deployment-harness-runtests) 
+[![DOI](https://zenodo.org/badge/7696/harnesscloud/ansible-deployment-harness.svg)](https://zenodo.org/badge/latestdoi/7696/harnesscloud/ansible-deployment-harness)
+
 
 The purpose of this ansible deployment is to configure and set up the HARNESS
 system on various target platforms, including vagrant-provisioned virtual
