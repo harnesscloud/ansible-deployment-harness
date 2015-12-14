@@ -22,6 +22,8 @@
         - nova-compute-docker
         - neutron-controller
         - neutron-network
+        - cinder-controller
+        - cinder-volume
         - horizon
 
     - name: check out library needed for demo deployment from github.com

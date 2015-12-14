@@ -44,6 +44,8 @@
     - glance
     - nova-controller
     - neutron-controller
+    - cinder-controller
+    - cinder-volume
     - horizon
 
 

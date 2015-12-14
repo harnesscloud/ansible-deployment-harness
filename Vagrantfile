@@ -42,6 +42,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
   end
 
+  cinder_file_to_disk = '.vagrant/cinder-volume-extradisk.vdi'
+
   config.vm.define "controller", primary: true do |m|
     m.vm.box = "ubuntu/trusty64"
     m.vm.hostname = "controller"
@@ -54,6 +56,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     m.vm.provider :virtualbox do |v|
       v.memory = 4096
       v.customize ["modifyvm", :id, "--nicpromisc2", "allow-vms"]
+      v.customize ["createhd", "--filename", cinder_file_to_disk, "--size", 4096]
+      v.customize ["storageattach", :id, "--storagectl", "SATAController",
+                   "--port", 2, "--device", 0, "--type", "hdd",
+                   "--medium", cinder_file_to_disk]
     end
 
     m.vm.provision "ansible" do |ansible|
