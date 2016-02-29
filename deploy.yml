@@ -284,6 +284,7 @@
         - harnesscloud/baseimage-cloud
         - harnesscloud/conpaas-director
         - harnesscloud/conpaas-worker
+        - harnesscloud/conpaas-worker-tcboot
 
     - name: query glance for harnesscloud/conpaas-director image id
       glance_image:
@@ -296,13 +297,13 @@
         state: present
       register: conpaas_director_image
  
-    - name: query glance for harnesscloud/conpaas-worker image id
+    - name: query glance for harnesscloud/conpaas-worker-tcboot image id
       glance_image:
         auth_url: "{{ openstack_identity_public_url }}"
         login_tenant_name: harness
         login_username: harness
         login_password: "{{ openstack_identity_harness_password }}"
-        name: harnesscloud/conpaas-worker
+        name: harnesscloud/conpaas-worker-tcboot
         file: /tmp/dummy
         state: present
       register: conpaas_worker_image
@@ -521,7 +522,7 @@
           export PASSWORD=password
           export IP_PREFIX=192.168.13.
           export CRS_URL=http://{{ openstack_controller_ip }}:56789
-          export IMAGE_ID=harnesscloud/conpaas-worker
+          export IMAGE_ID=harnesscloud/conpaas-worker-tcboot
         availability_zone: 'host:{{ hostvars[groups.compute[0]].ansible_hostname }}'
 
     - name: ensure floating ip is associated with vm instance
