@@ -428,7 +428,7 @@
     - name: ensure that harness iaas services are running
       docker:
         name: harness-iaas-services
-        image: harnesscloud/iaas-deployment-docker-image
+        image: harnesscloud/iaas-deployment-docker-image-tcrules
         docker_api_version: '1.18'
         net: bridge
         env:
