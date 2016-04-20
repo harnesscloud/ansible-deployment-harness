@@ -18,8 +18,8 @@
         - rabbitmq-server
         - keystone
         - glance
+        - nova-controller
         - nova-compute-docker
-        - neutron-network
         - horizon
 
     - name: check out experimental required roles to enable lbaas
