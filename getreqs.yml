@@ -20,11 +20,20 @@
         - glance
         - nova-controller
         - nova-compute-docker
-        - neutron-controller
-        - neutron-network
         - cinder-controller
         - cinder-volume
         - horizon
+
+    - name: check out experimental required roles to enable lbaas
+      delegate_to: localhost
+      connection: local
+      git:
+        repo: "https://github.com/gioannidis/ansible-role-{{ item }}.git"
+        dest: roles/{{ item }}
+        update: yes
+      with_items:
+        - neutron-controller
+        - neutron-network
 
     - name: check out library needed for demo deployment from github.com
       git:
