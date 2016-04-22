@@ -48,6 +48,10 @@ harness_docker_pull_images:
     tag: latest
     group: compute
 
+  - name: harnesscloud/conpaas-worker
+    tag: latest
+    group: compute
+
   - name: harnesscloud/conpaas-worker-tcboot
     tag: latest
     group: compute
