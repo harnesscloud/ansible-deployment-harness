@@ -20,9 +20,9 @@
         - glance
         - nova-controller
         - nova-compute-docker
-        - cinder-controller
-        - cinder-volume
         - horizon
+#       - cinder-controller
+#       - cinder-volume
 
     - name: check out experimental required roles to enable lbaas
       delegate_to: localhost

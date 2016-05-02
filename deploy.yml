@@ -78,9 +78,9 @@
     - glance
     - nova-controller
     - neutron-controller
-    - cinder-controller
-    - cinder-volume
     - horizon
+#   - cinder-controller
+#   - cinder-volume
 
 
 - hosts: network
