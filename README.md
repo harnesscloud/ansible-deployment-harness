@@ -54,6 +54,14 @@ After this step is completed make sure that you can run ansible:
 
     ansible --help
 
+Updating ``jinja2'' might be necessary, if the followin error message appears:
+
+    pkg_resources.DistributionNotFound: jinja2
+
+To update, run on the g5k front-end:
+
+    easy_install --user --upgrade jinja2
+
 ### Step 3: configure ssh
 
 The secure shell has a number of features that are important for security in
