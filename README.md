@@ -54,7 +54,7 @@ After this step is completed make sure that you can run ansible:
 
     ansible --help
 
-Updating ``jinja2'' might be necessary, if the followin error message appears:
+Updating ``jinja2'' might be necessary, if the following error message appears:
 
     pkg_resources.DistributionNotFound: jinja2
 
